@@ -9,6 +9,26 @@ pluginManagement {
             name "KosmX's maven"
             url 'https://maven.kosmx.dev/'
         }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven {
+            // Shedaniel's maven (Architectury API)
+            url = "https://maven.architectury.dev"
+            content {
+                includeGroup "dev.architectury"
+            }
+        }
+
+        maven {
+            // saps.dev Maven (KubeJS and Rhino)
+            url = "https://maven.saps.dev/releases"
+            content {
+                includeGroup "dev.latvian.mods"
+            }
+        }
+
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+
+        maven { url = 'https://maven.parchmentmc.org' }
     }
 }
 
@@ -16,4 +36,4 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
 
-rootProject.name = 'animatorJS'
+rootProject.name = 'animatorjs'
