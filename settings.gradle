@@ -5,6 +5,10 @@ pluginManagement {
             name = 'MinecraftForge'
             url = 'https://maven.minecraftforge.net/'
         }
+        maven {
+            name "KosmX's maven"
+            url 'https://maven.kosmx.dev/'
+        }
     }
 }
 

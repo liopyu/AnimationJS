@@ -1,4 +1,4 @@
-package net.liopyu.entityjs.animatorjs;
+package net.liopyu.animatorjs;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
