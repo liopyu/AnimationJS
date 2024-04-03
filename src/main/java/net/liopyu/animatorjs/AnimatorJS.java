@@ -10,6 +10,5 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public class AnimatorJS {
     public static final String MODID = "animatorjs";
     public AnimatorJS() {
-
     }
 }

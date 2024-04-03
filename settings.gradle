@@ -1,15 +1,11 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         maven {
             name = 'MinecraftForge'
             url = 'https://maven.minecraftforge.net/'
         }
-        maven {
-            name "KosmX's maven"
-            url 'https://maven.kosmx.dev/'
-        }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         maven {
             // Shedaniel's maven (Architectury API)
             url = "https://maven.architectury.dev"
@@ -30,10 +26,9 @@ pluginManagement {
 
         maven { url = 'https://maven.parchmentmc.org' }
     }
+
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.+'
 }
-
-rootProject.name = 'animatorjs'
