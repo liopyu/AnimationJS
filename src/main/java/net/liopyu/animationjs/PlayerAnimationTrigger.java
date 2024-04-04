@@ -30,14 +30,14 @@ public class PlayerAnimationTrigger {
             ```javascript
             ClientEvents.tick(event => {
                 if (event.player.isShiftKeyDown()) {
-                    PlayerAnimationTrigger.triggerAnimation(event.player, "animationjs:waving", "animationjs:animation")
+                    event.player.triggerAnimation(event.player, "animationjs:waving", "animationjs:animation")
                 }
             })
             ```
             """, params = {
-            @Param(name = "player", value = "The player who's being animated"),
-            @Param(name = "animationName", value = "The name of the animation specified in the json"),
-            @Param(name = "animationLocation", value = "This is the location of the animation in assets. This is usually namespace:animation")
+            @Param(name = "player", value = "Player Object: The client player being animated"),
+            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
+            @Param(name = "animationLocation", value = "ResourceLocation: This is the registry name of the registered animation.")
     })
     public static void triggerAnimation(AbstractClientPlayer player, Object animationName, Object animationLocation) {
         if (player == null) {
@@ -47,7 +47,7 @@ public class PlayerAnimationTrigger {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
         Object animationLoc = AnimationJSHelperClass.convertObjectToDesired(animationLocation, "resourcelocation");
         if (animationLoc != null) {
-            var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get((ResourceLocation) animationLoc);
+            var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player).get((ResourceLocation) animationLoc);
             if (animation != null) {
                 if (animName != null) {
                     animation.setAnimation(new KeyframeAnimationPlayer(PlayerAnimationRegistry.getAnimation((ResourceLocation) animName)));
