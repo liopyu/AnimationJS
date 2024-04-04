@@ -1,0 +1,15 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "net.liopyu.animationjs.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "animationjs.refmap.json",
+  "mixins": [
+    "ClientReloadMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
