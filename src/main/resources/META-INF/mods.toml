@@ -64,6 +64,12 @@ side = "BOTH"
 [[dependencies."${mod_id}"]]
 modId = "kubejs"
 mandatory = true
-versionRange = "[2001.6.4-build.99,)"
+versionRange = "[1902.6.0-build.130,)"
+ordering = "NONE"
+side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "playeranimator"
+mandatory = true
+versionRange = "[1.0.2,)"
 ordering = "NONE"
 side = "BOTH"

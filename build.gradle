@@ -129,11 +129,12 @@ dependencies {
     }
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.4-build.99")
-    implementation fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.18")
-    implementation fg.deobf("dev.architectury:architectury-forge:9.1.13")
-    implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
-    implementation fg.deobf("io.github.kosmx.bendy-lib:bendy-lib-forge:4.0.0")
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:1902.6.2-build.45")
+    implementation fg.deobf("dev.latvian.mods:rhino-forge:1902.2.3-build.284")
+    implementation fg.deobf("dev.architectury:architectury-forge:6.5.85")
+
+    implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2")
+    //implementation fg.deobf("io.github.kosmx.bendy-lib:bendy-lib-forge:4.0.0")
     // Use kube's jij'd version
     implementation fg.deobf("io.github.llamalad7:mixinextras-common:0.2.1")
     //implementation fg.deobf('net.liopyu.liolib:liolib-forge-1.19.2:0.0.2')
