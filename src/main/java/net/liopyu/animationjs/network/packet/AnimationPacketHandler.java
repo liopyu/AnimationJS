@@ -1,6 +1,5 @@
 package net.liopyu.animationjs.network.packet;
 
-import net.liopyu.animationjs.AnimationJS;
 import net.liopyu.animationjs.PlayerAnimationTrigger;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;

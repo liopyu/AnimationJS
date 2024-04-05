@@ -8,19 +8,15 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import net.liopyu.animationjs.AnimationJS;
-import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.liopyu.animationjs.network.packet.AnimationPacketHandler;
+import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.liopyu.animationjs.utils.IAnimationTrigger;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.PacketDistributor;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import net.minecraft.network.chat.Component;
-import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.UUID;
 
