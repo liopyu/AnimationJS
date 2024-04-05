@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import static net.liopyu.animationjs.AnimationJS.MODID;
 
@@ -16,14 +17,14 @@ import static net.liopyu.animationjs.AnimationJS.MODID;
  * This is an example implementation of PlayerAnimator resourceLoading and playerMapping
  */
 @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class PlayerAnimatorExample {
+public class PlayerAnimatorJS {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         //Set the player construct callback. It can be a lambda function.
         PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                 new ResourceLocation(MODID, "animation"),
                 42,
-                PlayerAnimatorExample::registerPlayerAnimation);
+                PlayerAnimatorJS::registerPlayerAnimation);
     }
 
     //This method will set your mods animation into the library.

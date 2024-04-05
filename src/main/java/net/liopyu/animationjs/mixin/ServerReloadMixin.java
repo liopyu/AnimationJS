@@ -9,10 +9,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(KubeJSCommands.class)
-public abstract class ClientReloadMixin {
-    @Inject(method = "reloadClient", at = @At(value = "RETURN", ordinal = 0), remap = false)
-    private static void entityjs$onReloadClient(CommandSourceStack source, CallbackInfoReturnable<Integer> cir) {
-        AnimationJSHelperClass.clientErrorMessagesLogged.clear();
-        AnimationJSHelperClass.clientWarningMessagesLogged.clear();
+public abstract class ServerReloadMixin {
+    @Inject(method = "reloadServer", at = @At(value = "RETURN", ordinal = 0), remap = false)
+    private static void entityjs$onReloadServer(CommandSourceStack source, CallbackInfoReturnable<Integer> cir) {
+        AnimationJSHelperClass.serverErrorMessagesLogged.clear();
+        AnimationJSHelperClass.serverWarningMessagesLogged.clear();
     }
 }

@@ -6,7 +6,8 @@
   "refmap": "animationjs.refmap.json",
   "mixins": [
     "ClientReloadMixin",
-    "PlayerAnimationJSMixin"
+    "PlayerAnimationJSMixin",
+    "ServerReloadMixin"
   ],
   "client": [
   ],
