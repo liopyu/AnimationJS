@@ -19,7 +19,6 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = AnimationJS.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class PlayerAnimationTrigger {
     public static void triggerAnimationOnClient(AbstractClientPlayer player, ResourceLocation animationName) {
         if (player == null) return;

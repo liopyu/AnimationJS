@@ -26,13 +26,6 @@ import java.util.UUID;
 
 @Mixin(Player.class)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
-    @Shadow
-    @Final
-    private static Logger LOGGER;
-
-    @Shadow
-    public abstract Component getName();
-
     @Info(value = """
             Used to trigger animations on the client side. This can be
             called from both the client or server player object.
