@@ -1,6 +1,7 @@
 # Summary
 
-The AnimationJS mod is an addon for KubeJS that allows scripters to trigger animations on both the server player object and the client player object seamlessly.
+The AnimationJS mod is an addon for KubeJS that allows scripters to trigger animations on both the server player object
+and the client player object seamlessly.
 
 ## Features:
 
@@ -9,9 +10,12 @@ The AnimationJS mod is an addon for KubeJS that allows scripters to trigger anim
 
 ## Usage:
 
-To trigger animations, use the `.triggerAnimation()` method in your KubeJS scripts. Provide the name of the animation as a resource location.
+To trigger animations, use the `.triggerAnimation()` method in your KubeJS scripts. Provide the name of the animation as
+a resource location.
 
-By default, this mod comes with a simple waving animation in the assets>animationjs>player_animation folder. For more information on how to add custom animations through JSON, visit the official EmoteCraft wiki page [here](https://kosmx.gitbook.io/emotecraft/tutorial/custom-emotes).
+By default, this mod comes with a simple waving animation in the assets>animationjs>player_animation folder. For more
+information on how to add custom animations through JSON, visit the official EmoteCraft wiki
+page [here](https://kosmx.gitbook.io/emotecraft/tutorial/custom-emotes).
 
 ```javascript
 event.player.triggerAnimation("animationjs:waving")
@@ -26,8 +30,8 @@ event.player.triggerAnimation("animationjs:waving")
 
 ## Dependencies:
 
-- KubeJS
-- [playerAnimator mod](https://www.curseforge.com/minecraft/mc-mods/playeranimator)
+- [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs)
+- [playerAnimator](https://www.curseforge.com/minecraft/mc-mods/playeranimator)
 
 ## Community
 
