@@ -1,5 +1,8 @@
 package net.liopyu.animationjs.network.packet;
 
+import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.liopyu.animationjs.PlayerAnimationTrigger;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -16,6 +19,8 @@ public class AnimationPacketHandler {
         ResourceLocation animationName = message.animationName;
         AbstractClientPlayer player = AnimationJSHelperClass.getClientPlayerByUUID(playerUUID);
         PlayerAnimationTrigger.triggerAnimationOnClient(player, animationName);
+        KeyframeAnimation anim = new KeyframeAnimationPlayer(PlayerAnimationRegistry.getAnimation(animationName)).getData();
+
         contextSupplier.get().setPacketHandled(true);
     }
 

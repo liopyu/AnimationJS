@@ -31,6 +31,15 @@ public class PlayerAnimatorJS {
         //This will be invoked for every new player
         return new ModifierLayer<>();
     }
+
+    /*@SubscribeEvent
+    public static void onPlayerInteract(PlayerInteractEvent.RightClickEmpty event) {
+        try {
+
+        } catch (Exception e) {
+            ConsoleJS.SERVER.error("Failed to trigger animation on server: " + e);
+        }
+    }*/
     /*@SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
