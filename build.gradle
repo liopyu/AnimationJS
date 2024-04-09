@@ -121,18 +121,28 @@ repositories {
         name "KosmX's maven"
         url 'https://maven.kosmx.dev/'
     }
+    maven {
+        name "zigythebirdMods"
+        url "https://maven.zigythebird.com/mods"
+    }
+    /*maven { url 'https://libs.azuredoom.com:4443/mods' }*/
 }
 
 dependencies {
     repositories {
         mavenCentral()
     }
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    //KubeJS Dependencies
     implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.4-build.99")
     implementation fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.18")
     implementation fg.deobf("dev.architectury:architectury-forge:9.1.13")
+    //PlayerAnimator/PlayerAnimatorApi Dependencies
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
+    implementation fg.deobf("zigy.playeranimatorapi:playeranimatorapi-forge-1.20.1:1.2.0")
+    /*implementation fg.deobf("zigy.zigysmultiloaderutils:zigysmultiloaderutils-forge-1.20.1:1.2.0")
+    implementation fg.deobf("mod.azure.azurelib:azurelib-forge-1.20.1:1.0.34")*/
     //implementation fg.deobf("io.github.kosmx.bendy-lib:bendy-lib-forge:4.0.0")
     // Use kube's jij'd version
     implementation fg.deobf("io.github.llamalad7:mixinextras-common:0.2.1")
