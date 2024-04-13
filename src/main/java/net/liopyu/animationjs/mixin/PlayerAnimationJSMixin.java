@@ -46,4 +46,5 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
         }
     }
+
 }

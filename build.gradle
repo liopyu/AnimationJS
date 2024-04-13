@@ -136,7 +136,7 @@ dependencies {
     //implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
     //PlayerAnimator/PlayerAnimatorApi Dependencies
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
-    implementation fg.deobf('lio.playeranimatorapi:liosplayeranimatorapi-forge-1.20.1-0.0.1:0.0.1')
+    implementation fg.deobf('lio.playeranimatorapi:liosplayeranimatorapi-forge-1.20.1-0.0.2:0.0.2')
     implementation fg.deobf("zigy.zigysmultiloaderutils:zigysmultiloaderutils-forge-1.20.1:1.2.2")
     repositories {
         mavenCentral()

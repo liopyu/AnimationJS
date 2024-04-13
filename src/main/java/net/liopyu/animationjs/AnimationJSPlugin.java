@@ -8,9 +8,9 @@ public class AnimationJSPlugin extends KubeJSPlugin {
 
     }
 
-    @Override
+    /*@Override
     public void registerBindings(BindingsEvent event) {
-        event.add("PlayerAnimationTrigger", PlayerAnimationTrigger.class);
+        //event.add("PlayerAnimationTrigger", PlayerAnimationTrigger.class);
         //event.add("AbstractServerEmotePlay", AbstractServerEmotePlay.class);
-    }
+    }*/
 }
