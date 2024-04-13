@@ -1,33 +1,22 @@
 package net.liopyu.animationjs.mixin;
 
-import dev.kosmx.playerAnim.api.layered.IAnimation;
-import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
-import dev.kosmx.playerAnim.api.layered.ModifierLayer;
-import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
-import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
-import net.liopyu.animationjs.AnimationJS;
+import lio.playeranimatorapi.API.PlayerAnimAPI;
+import lio.playeranimatorapi.API.PlayerAnimAPIClient;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
-import net.liopyu.animationjs.network.packet.AnimationPacketHandler;
 import net.liopyu.animationjs.utils.IAnimationTrigger;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.PacketDistributor;
-import org.slf4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import net.minecraft.network.chat.Component;
-import org.spongepowered.asm.mixin.Shadow;
-
-import java.util.UUID;
 
 @Mixin(Player.class)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
-            Used to trigger animations on the client side. This can be
+            Used to trigger animations on both server/client. This can be
             called from both the client or server player object.
                         
             Example Usage:
@@ -45,19 +34,16 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                 AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
             }
-            var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player).get(new ResourceLocation(AnimationJS.MODID, "animation"));
-            if (animation != null) {
-                animation.setAnimation(new KeyframeAnimationPlayer(PlayerAnimationRegistry.getAnimation((ResourceLocation) animName)));
-            }
+            ResourceLocation aN = (ResourceLocation) animName;
+            PlayerAnimAPIClient.playPlayerAnim(player, aN);
         } else if (obj instanceof ServerPlayer serverPlayer) {
             if (animName == null) {
                 AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
             }
-            UUID playerUUID = serverPlayer.getUUID();
             ResourceLocation aN = (ResourceLocation) animName;
-            AnimationPacketHandler.Message packet = new AnimationPacketHandler.Message(playerUUID, aN);
-            AnimationJS.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), packet);
+            ServerLevel serverLevel = serverPlayer.serverLevel();
+            PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
         }
     }
 }

@@ -111,7 +111,10 @@ repositories {
             includeGroup "dev.latvian.mods"
         }
     }
-    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven {
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        
+    }
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
     // flatDir {
     //     dir 'libs'
@@ -125,13 +128,15 @@ repositories {
         name "zigythebirdMods"
         url "https://maven.zigythebird.com/mods"
     }
-    /*maven { url 'https://libs.azuredoom.com:4443/mods' }*/
+    maven { url 'https://dl.cloudsmith.io/public/lio/liosplayeranimationapi/maven/' }
+
 }
 
 dependencies {
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
     //PlayerAnimator/PlayerAnimatorApi Dependencies
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
-    implementation fg.deobf("zigy.playeranimatorapi:playeranimatorapi-forge-1.20.1:1.3.1")
+    implementation fg.deobf('lio.playeranimatorapi:liosplayeranimatorapi-forge-1.20.1-0.0.1:0.0.1')
     implementation fg.deobf("zigy.zigysmultiloaderutils:zigysmultiloaderutils-forge-1.20.1:1.2.2")
     repositories {
         mavenCentral()
