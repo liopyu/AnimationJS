@@ -5,6 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -86,5 +90,13 @@ public class AnimationJSHelperClass {
             }
         }
         return null;
+    }
+
+    public static ServerPlayer getPlayerByUUID(UUID playerUUID) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return null;
+        }
+        return server.getPlayerList().getPlayer(playerUUID);
     }
 }
