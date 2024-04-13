@@ -1,16 +1,9 @@
 package net.liopyu.animationjs.mixin;
 
-import dev.kosmx.playerAnim.api.layered.IAnimation;
-import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
-import dev.kosmx.playerAnim.api.layered.ModifierLayer;
-import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
-import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
 import lio.playeranimatorapi.API.PlayerAnimAPIClient;
-import net.liopyu.animationjs.AnimationJS;
-import net.liopyu.animationjs.network.packet.AnimationPacketHandler;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.liopyu.animationjs.utils.IAnimationTrigger;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -18,10 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
-
-import java.util.UUID;
 
 @Mixin(Player.class)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
