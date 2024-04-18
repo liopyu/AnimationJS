@@ -129,22 +129,30 @@ repositories {
         url "https://maven.zigythebird.com/mods"
     }
     maven { url 'https://dl.cloudsmith.io/public/lio/liosplayeranimationapi/maven/' }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven { url "https://dl.cloudsmith.io/public/lio/multiloaderutils/maven/" }
 
 }
 
 dependencies {
+    runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
     //implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
     //PlayerAnimator/PlayerAnimatorApi Dependencies
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
-    implementation fg.deobf('lio.playeranimatorapi:liosplayeranimatorapi-forge-1.20.1-0.0.2:0.0.2')
-    implementation fg.deobf("zigy.zigysmultiloaderutils:zigysmultiloaderutils-forge-1.20.1:1.2.2")
+    implementation fg.deobf("lio.playeranimatorapi:liosplayeranimatorapi-forge-$minecraft_version-$liosAPI_version:$liosAPI_version")
+    implementation fg.deobf('lio.liosmultiloaderutils:liosmultiloaderutils-forge-1.20.1-1.2.2:1.2.2')
     repositories {
         mavenCentral()
     }
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     //KubeJS Dependencies
-    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.4-build.99")
+    implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.4-build.120")
     implementation fg.deobf("dev.latvian.mods:rhino-forge:2001.2.2-build.18")
     implementation fg.deobf("dev.architectury:architectury-forge:9.1.13")
 

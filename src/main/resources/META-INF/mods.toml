@@ -64,7 +64,7 @@ side = "BOTH"
 [[dependencies."${mod_id}"]]
 modId = "kubejs"
 mandatory = true
-versionRange = "[2001.6.4-build.99,)"
+versionRange = "[2001.6.4-build.120,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies."${mod_id}"]]
@@ -76,6 +76,6 @@ side = "BOTH"
 [[dependencies."${mod_id}"]]
 modId = "liosplayeranimatorapi"
 mandatory = true
-versionRange = "[0.0.1,)"
+versionRange = "[0.0.3,)"
 ordering = "NONE"
 side = "BOTH"
