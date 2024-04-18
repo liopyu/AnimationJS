@@ -4,11 +4,14 @@ package net.liopyu.animationjs;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
+import net.liopyu.animationjs.events.AddControllerEvent;
+import net.liopyu.animationjs.utils.AnimationJSEvents;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import static net.liopyu.animationjs.AnimationJS.MODID;
 
@@ -32,6 +35,12 @@ public class PlayerAnimatorJS {
         return new ModifierLayer<>();
     }
 
+    @SubscribeEvent
+    public static void onCommonSetup(FMLCommonSetupEvent event) {
+        if (AnimationJSEvents.addController.hasListeners()) {
+            AnimationJSEvents.addController.post(new AddControllerEvent());
+        }
+    }
     /*@SubscribeEvent
     public static void onPlayerInteract(PlayerInteractEvent.RightClickEmpty event) {
         try {

@@ -80,7 +80,7 @@ public class AnimationJSHelperClass {
 
     public static AbstractClientPlayer getClientPlayerByUUID(UUID playerUUID) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft == null || minecraft.level == null) {
+        if (minecraft.level == null) {
             return null;
         }
         ClientLevel world = minecraft.level;
