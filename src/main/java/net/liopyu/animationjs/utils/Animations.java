@@ -1,57 +1,34 @@
-package net.liopyu.animationjs.mixin;
+package net.liopyu.animationjs.utils;
 
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
-import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
-import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
 import lio.playeranimatorapi.API.PlayerAnimAPIClient;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
-import net.liopyu.animationjs.utils.*;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.function.Consumer;
+public class Animations<T extends Player> {
+    public T animatable;
 
-@Mixin(Player.class)
-public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
-    @Unique
-    private final Object animatorJS$player = this;
-    @Unique
-    public transient Consumer<Animations<Player>> animatorJS$animController;
-    @Unique
-    private AnimationJSHelperClass.EntityMovementTracker animatorJS$movementTracker = new AnimationJSHelperClass.EntityMovementTracker();
-    @Unique
     private ResourceLocation animatorJS$currentLocation;
 
-    @Unique
-    public boolean animatorJS$isMoving() {
-        return animatorJS$movementTracker.isMoving((Entity) animatorJS$player);
-    }
 
-    @Unique
     private AbstractClientPlayer animatorJS$getClientPlayer() {
-        if (animatorJS$player != null) {
-            return AnimationJSHelperClass.getClientPlayerByUUID(((Player) animatorJS$player).getUUID());
+        if (animatable != null) {
+            return AnimationJSHelperClass.getClientPlayerByUUID(((Player) animatable).getUUID());
         } else return null;
     }
 
-    @Unique
+
     private IAnimation animatorJS$getAnim() {
         if (animatorJS$getClientPlayer() == null) return null;
         ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(animatorJS$getClientPlayer()).get(new ResourceLocation("liosplayeranimatorapi", "factory"));
@@ -60,23 +37,12 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         } else return null;
     }
 
-    @Unique
+
     private boolean animatorJS$isAnimActive() {
         return animatorJS$getAnim() != null && animatorJS$getAnim().isActive();
     }
 
-    @Inject(method = "tick", at = @At(value = "RETURN", ordinal = 0), remap = false)
-    private void animationJS$tick(CallbackInfo ci) {
-        if (!animatorJS$isAnimActive()) {
-            animatorJS$currentLocation = null;
-        }
-        if (animatorJS$player != null && EventHandlers.universalController.hasListeners()) {
-            EventHandlers.universalController.post(new UniversalController((Player) animatorJS$player));
-        }
-    }
 
-
-    @Unique
     private boolean animatorJS$canPlay(ResourceLocation aN) {
         if (this.animatorJS$currentLocation == null) {
             this.animatorJS$currentLocation = aN;
@@ -104,8 +70,9 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json")
     })
     public void animatorJS$triggerAnimation(Object animationName) {
+        Object play = animatable;
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animatorJS$player instanceof AbstractClientPlayer player) {
+        if (play instanceof AbstractClientPlayer player) {
             if (animName == null) {
                 AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
@@ -114,7 +81,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             if (animatorJS$canPlay(aN)) {
                 PlayerAnimAPIClient.playPlayerAnim(player, aN);
             }
-        } else if (animatorJS$player instanceof ServerPlayer serverPlayer) {
+        } else if (play instanceof ServerPlayer serverPlayer) {
             if (animName == null) {
                 AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
@@ -127,7 +94,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         }
     }
 
-    @Unique
+
     @Info(value = """
             Used to trigger animations on both server/client. This can be
             called from both the client or server player object.
@@ -141,8 +108,9 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             @Param(name = "canOverlapSelf", value = "Boolean: Whether the animation can overlap itself if it's already playing")
     })
     public void animatorJS$triggerAnimation(Object animationName, boolean canOverlapSelf) {
+        Object play = animatable;
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animatorJS$player instanceof AbstractClientPlayer player) {
+        if (play instanceof AbstractClientPlayer player) {
             if (animName == null) {
                 AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
@@ -153,7 +121,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             } else if (animatorJS$canPlay(aN)) {
                 PlayerAnimAPIClient.playPlayerAnim(player, aN);
             }
-        } else if (animatorJS$player instanceof ServerPlayer serverPlayer) {
+        } else if (play instanceof ServerPlayer serverPlayer) {
             if (animName == null) {
                 AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
@@ -168,7 +136,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         }
     }
 
-    @Unique
+
     @Info(value = """
             Used to trigger animations on both server/client with customizable animation data.
                         
@@ -184,8 +152,9 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations")
     })
     public void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important) {
+        Object play = animatable;
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationID, "resourcelocation");
-        if (animatorJS$player instanceof AbstractClientPlayer player) {
+        if (play instanceof AbstractClientPlayer player) {
             if (animName == null) {
                 AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
@@ -202,7 +171,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             if (animatorJS$canPlay(aN)) {
                 PlayerAnimAPIClient.playPlayerAnim(player, data);
             }
-        } else if (animatorJS$player instanceof ServerPlayer serverPlayer) {
+        } else if (play instanceof ServerPlayer serverPlayer) {
             if (animName == null) {
                 AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
@@ -220,10 +189,5 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                 PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, data);
             }
         }
-    }
-
-    @Unique
-    public void animatorJS$addAnimationController(Consumer<Animations<Player>> consumer) {
-        this.animatorJS$animController = consumer;
     }
 }

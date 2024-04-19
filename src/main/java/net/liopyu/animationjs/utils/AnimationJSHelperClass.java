@@ -1,12 +1,15 @@
 package net.liopyu.animationjs.utils;
 
+import dev.kosmx.playerAnim.core.util.Ease;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import lio.playeranimatorapi.data.PlayerParts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -65,9 +68,59 @@ public class AnimationJSHelperClass {
     public static Object convertObjectToDesired(Object input, String outputType) {
         return switch (outputType.toLowerCase()) {
             case "resourcelocation" -> convertToResourceLocation(input);
+            case "ease" -> easeFromString(input);
             default -> input;
         };
     }
+
+
+    // Method to convert a string representation of easing function name to Ease enum
+    public static Ease easeFromString(Object functionName) {
+        if (functionName instanceof String s) {
+            return switch (s.toUpperCase()) {
+                case "LINEAR" -> Ease.LINEAR;
+                case "CONSTANT" -> Ease.CONSTANT;
+                case "INSINE" -> Ease.INSINE;
+                case "OUTSINE" -> Ease.OUTSINE;
+                case "INOUTSINE" -> Ease.INOUTSINE;
+                case "INCUBIC" -> Ease.INCUBIC;
+                case "OUTCUBIC" -> Ease.OUTCUBIC;
+                case "INOUTCUBIC" -> Ease.INOUTCUBIC;
+                case "INQUAD" -> Ease.INQUAD;
+                case "OUTQUAD" -> Ease.OUTQUAD;
+                case "INOUTQUAD" -> Ease.INOUTQUAD;
+                case "INQUART" -> Ease.INQUART;
+                case "OUTQUART" -> Ease.OUTQUART;
+                case "INOUTQUART" -> Ease.INOUTQUART;
+                case "INQUINT" -> Ease.INQUINT;
+                case "OUTQUINT" -> Ease.OUTQUINT;
+                case "INOUTQUINT" -> Ease.INOUTQUINT;
+                case "INEXPO" -> Ease.INEXPO;
+                case "OUTEXPO" -> Ease.OUTEXPO;
+                case "INOUTEXPO" -> Ease.INOUTEXPO;
+                case "INCIRC" -> Ease.INCIRC;
+                case "OUTCIRC" -> Ease.OUTCIRC;
+                case "INOUTCIRC" -> Ease.INOUTCIRC;
+                case "INBACK" -> Ease.INBACK;
+                case "OUTBACK" -> Ease.OUTBACK;
+                case "INOUTBACK" -> Ease.INOUTBACK;
+                case "INELASTIC" -> Ease.INELASTIC;
+                case "OUTELASTIC" -> Ease.OUTELASTIC;
+                case "INOUTELASTIC" -> Ease.INOUTELASTIC;
+                case "INBOUNCE" -> Ease.INBOUNCE;
+                case "OUTBOUNCE" -> Ease.OUTBOUNCE;
+                case "INOUTBOUNCE" -> Ease.INOUTBOUNCE;
+                default -> {
+                    ConsoleJS.SERVER.error("[AnimationJS]: Unknown Easing type, defaulting to \"LINEAR\"");
+                    yield Ease.LINEAR;
+                }
+            };
+        } else if (functionName instanceof Ease e) {
+            return e;
+        }
+        return null;
+    }
+
 
     private static ResourceLocation convertToResourceLocation(Object input) {
         if (input instanceof ResourceLocation) {
@@ -100,4 +153,38 @@ public class AnimationJSHelperClass {
         return server.getPlayerList().getPlayer(playerUUID);
     }
 
+    public static ServerPlayer getServerPlayerByUUID(UUID playerUUID) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return null;
+        }
+        return server.getPlayerList().getPlayer(playerUUID);
+    }
+
+    public static class EntityMovementTracker {
+        private double prevX;
+        private double prevY;
+        private double prevZ;
+
+        public EntityMovementTracker() {
+            prevX = 0;
+            prevY = 0;
+            prevZ = 0;
+        }
+
+        public boolean isMoving(Entity entity) {
+            double currentX = entity.getX();
+            double currentY = entity.getY();
+            double currentZ = entity.getZ();
+
+            boolean moving = currentX != prevX || currentY != prevY || currentZ != prevZ;
+
+            // Update previous position
+            prevX = currentX;
+            prevY = currentY;
+            prevZ = currentZ;
+
+            return moving;
+        }
+    }
 }
