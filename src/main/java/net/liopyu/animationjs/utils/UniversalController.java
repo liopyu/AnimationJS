@@ -5,16 +5,18 @@ import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
-import lio.playeranimatorapi.API.PlayerAnimAPIClient;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.function.BiConsumer;
+
 public class UniversalController extends SimplePlayerEventJS {
-    private ResourceLocation currentLocation;
+    private transient ResourceLocation currentLocation;
 
 
     public UniversalController(Player p) {
@@ -22,89 +24,62 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     // Stop an animation for a specific player
-    public void stopAnimation(Object animationName, Player player) {
+    public void stopAnimation(Object animationName, ServerPlayer serverPlayer) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (player instanceof AbstractClientPlayer clientPlayer) {
-            if (animName == null) {
-                AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-                return;
-            }
-            ResourceLocation aN = (ResourceLocation) animName;
-            PlayerAnimAPIClient.stopPlayerAnim(clientPlayer, aN);
-        } else if (player instanceof ServerPlayer serverPlayer) {
-            if (animName == null) {
-                AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-                return;
-            }
-            ServerLevel serverLevel = serverPlayer.serverLevel();
-            ResourceLocation aN = (ResourceLocation) animName;
-            PlayerAnimAPI.stopPlayerAnim(serverLevel, player, aN);
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
+            return;
         }
+        ServerLevel serverLevel = serverPlayer.serverLevel();
+        ResourceLocation aN = (ResourceLocation) animName;
+        PlayerAnimAPI.stopPlayerAnim(serverLevel, serverPlayer, aN);
     }
 
     // Start an animation for a specific player
-    public void startAnimation(Object animationName, Player player) {
+    public void startAnimation(Object animationName, ServerPlayer serverPlayer) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (player instanceof AbstractClientPlayer clientPlayer) {
-            if (animName == null) {
-                AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
-                return;
-            }
-            ResourceLocation aN = (ResourceLocation) animName;
-            if (canPlay(aN, clientPlayer)) {
-                PlayerAnimAPIClient.playPlayerAnim(clientPlayer, aN);
-            }
-        } else if (player instanceof ServerPlayer serverPlayer) {
-            if (animName == null) {
-                AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
-                return;
-            }
-            ServerLevel serverLevel = serverPlayer.serverLevel();
-            ResourceLocation aN = (ResourceLocation) animName;
-            AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(serverPlayer.getUUID());
-            if (canPlay(aN, clientPlayer)) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
-            }
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        ServerLevel serverLevel = serverPlayer.serverLevel();
+        ResourceLocation aN = (ResourceLocation) animName;
+        AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(serverPlayer.getUUID());
+        if (canPlay(aN, clientPlayer)) {
+            PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
         }
     }
 
-    // Start an animation for all players
-    public void startAnimationForAll(Object animationName) {
+    private void processAnimationForAll(Object animationName, BiConsumer<Player, ResourceLocation> action) {
+        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        ResourceLocation aN = (ResourceLocation) animName;
         getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (player == null) {
-                return;
-            }
-            Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-            if (animName == null) {
-                AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-                return;
-            }
-            ResourceLocation aN = (ResourceLocation) animName;
-            AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(player.getUUID());
-            if (canPlay(aN, clientPlayer)) {
-                PlayerAnimAPI.playPlayerAnim(player.serverLevel(), player, aN);
+            if (player != null) {
+                AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(player.getUUID());
+                //ConsoleJS.SERVER.info("[AnimationJS]: " + player + " is playing animation: " + animName + ". CanPlay: " + canPlay(aN, clientPlayer));
+                if (canPlay(aN, clientPlayer)) {
+                    action.accept(player, aN);
+                }
             }
         });
     }
 
-    // Stop an animation for all players
-    public void stopAnimationForAll(String animationName) {
-        getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (player == null) {
-                return;
-            }
-            Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-            if (animName == null) {
-                AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-                return;
-            }
-            ResourceLocation aN = (ResourceLocation) animName;
-            AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(player.getUUID());
-            if (canPlay(aN, clientPlayer)) {
-                PlayerAnimAPI.stopPlayerAnim(player.serverLevel(), player, aN);
-            }
+    public void startAnimationForAll(Object animationName) {
+        processAnimationForAll(animationName, (player, anim) -> {
+            PlayerAnimAPI.playPlayerAnim(((ServerPlayer) player).serverLevel(), player, anim);
         });
     }
+
+    public void stopAnimationForAll(String animationName) {
+        processAnimationForAll(animationName, (player, anim) -> {
+            PlayerAnimAPI.stopPlayerAnim(((ServerPlayer) player).serverLevel(), player, anim);
+        });
+    }
+
 
     private boolean canPlay(ResourceLocation aN, AbstractClientPlayer player) {
         if (currentLocation == null) {

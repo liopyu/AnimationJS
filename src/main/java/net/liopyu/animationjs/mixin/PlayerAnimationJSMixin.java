@@ -4,9 +4,6 @@ import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
-import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
-import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
@@ -26,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.*;
 import java.util.function.Consumer;
 
 @Mixin(Player.class)
@@ -33,7 +31,10 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     private final Object animatorJS$player = this;
     @Unique
+    private final Map<UUID, UniversalController> animatorJS$playerControllers = new HashMap<>();
+    @Unique
     public transient Consumer<Animations<Player>> animatorJS$animController;
+
     @Unique
     private AnimationJSHelperClass.EntityMovementTracker animatorJS$movementTracker = new AnimationJSHelperClass.EntityMovementTracker();
     @Unique
@@ -70,8 +71,9 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         if (!animatorJS$isAnimActive()) {
             animatorJS$currentLocation = null;
         }
-        if (animatorJS$player != null && EventHandlers.universalController.hasListeners()) {
-            EventHandlers.universalController.post(new UniversalController((Player) animatorJS$player));
+        if (animatorJS$player != null && animatorJS$player instanceof ServerPlayer serverPlayer && EventHandlers.universalController.hasListeners()) {
+            UniversalController controller = animatorJS$playerControllers.computeIfAbsent(serverPlayer.getUUID(), uuid -> new UniversalController(serverPlayer));
+            EventHandlers.universalController.post(controller);
         }
     }
 
