@@ -1,8 +1,7 @@
 package net.liopyu.animationjs;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
-import net.liopyu.animationjs.utils.EventHandlers;
+import net.liopyu.animationjs.events.EventHandlers;
 
 public class AnimationJSPlugin extends KubeJSPlugin {
     public void initStartup() {

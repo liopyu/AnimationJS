@@ -1,8 +1,8 @@
-package net.liopyu.animationjs.utils;
+package net.liopyu.animationjs.events;
 
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
-import dev.latvian.mods.kubejs.event.Extra;
+import net.liopyu.animationjs.events.UniversalController;
 
 public class EventHandlers {
     public static final EventGroup AnimationJS = EventGroup.of("AnimationJS");

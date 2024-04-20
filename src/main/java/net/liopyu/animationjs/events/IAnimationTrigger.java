@@ -1,13 +1,8 @@
-package net.liopyu.animationjs.utils;
+package net.liopyu.animationjs.events;
 
-import dev.kosmx.playerAnim.core.util.Ease;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import lio.playeranimatorapi.data.PlayerParts;
-import lio.playeranimatorapi.modifier.CommonModifier;
-import net.liopyu.animationjs.mixin.PlayerAnimationJSMixin;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 @RemapPrefixForJS("animatorJS$")

@@ -1,4 +1,4 @@
-package net.liopyu.animationjs.utils;
+package net.liopyu.animationjs.events;
 
 
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -7,6 +7,7 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
+import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
