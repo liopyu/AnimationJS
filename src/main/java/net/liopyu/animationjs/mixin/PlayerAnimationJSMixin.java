@@ -19,6 +19,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,20 +34,30 @@ import java.util.function.Consumer;
 @Mixin(Player.class)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
+    private static final double POSITION_THRESHOLD = 0.001;
+    @Unique
+    private static final int COOLDOWN_TICKS = 1;
+    @Unique
     private final Object animatorJS$player = this;
     @Unique
     private final Map<UUID, UniversalController> animatorJS$playerControllers = new HashMap<>();
-
+    @Unique
+    private int animatorJS$cooldown;
     @Unique
     private AnimationJSHelperClass.EntityMovementTracker animatorJS$movementTracker = new AnimationJSHelperClass.EntityMovementTracker();
     @Unique
     private ResourceLocation animatorJS$currentLocation;
-
-    @Unique
-    @Info("Is the player currently in motion")
-    public boolean animatorJS$isMoving() {
+    /*public boolean animatorJS$isMoving() {
         return animatorJS$movementTracker.isMoving((Entity) animatorJS$player);
-    }
+    }*/
+    @Unique
+    private double animatorJS$prevX;
+    @Unique
+    private double animatorJS$prevY;
+    @Unique
+    private double animatorJS$prevZ;
+    @Unique
+    private boolean animatorJS$isMoving = false;
 
     @Unique
     private AbstractClientPlayer animatorJS$getClientPlayer() {
@@ -70,8 +81,52 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         return animatorJS$getAnim() != null && animatorJS$getAnim().isActive();
     }
 
+    @Info("Is the player currently in motion")
+    public boolean animatorJS$isMoving() {
+        return animatorJS$isMoving;
+    }
+
+    @Unique
+    private void animatorJS$movingBoolean() {
+        Player player = (Player) animatorJS$player;
+        if (player != null) {
+            double currentX = player.getX();
+            double currentY = player.getY();
+            double currentZ = player.getZ();
+
+            double deltaX = Math.abs(animatorJS$prevX - currentX);
+            double deltaY = Math.abs(animatorJS$prevY - currentY);
+            double deltaZ = Math.abs(animatorJS$prevZ - currentZ);
+
+            boolean movingX = deltaX > POSITION_THRESHOLD;
+            boolean movingY = deltaY > POSITION_THRESHOLD;
+            boolean movingZ = deltaZ > POSITION_THRESHOLD;
+
+            animatorJS$prevX = currentX;
+            animatorJS$prevY = currentY;
+            animatorJS$prevZ = currentZ;
+
+            if (movingX || movingY || movingZ) {
+                animatorJS$cooldown = COOLDOWN_TICKS;
+                animatorJS$isMoving = true;
+                return;
+            } else {
+                if (animatorJS$cooldown > 0) {
+                    animatorJS$cooldown--;
+                    animatorJS$isMoving = true;
+                    return;
+                } else {
+                    animatorJS$isMoving = false;
+                    return;
+                }
+            }
+        }
+        animatorJS$isMoving = false;
+    }
+
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void animationJS$tick(CallbackInfo ci) {
+        animatorJS$movingBoolean();
         if (!animatorJS$isAnimActive()) {
             animatorJS$currentLocation = null;
         }
