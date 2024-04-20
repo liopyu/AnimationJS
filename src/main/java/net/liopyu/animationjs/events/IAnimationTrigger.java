@@ -14,8 +14,6 @@ public interface IAnimationTrigger {
 
     void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important);
 
-    void animatorJS$addAnimationController(Consumer<Animations<Player>> consumer);
-
     boolean animatorJS$isMoving();
 
     @RemapForJS("isPlayingAnimation")
