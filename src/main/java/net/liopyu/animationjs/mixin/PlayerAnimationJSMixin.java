@@ -45,6 +45,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     private ResourceLocation animatorJS$currentLocation;
 
     @Unique
+    @Info("Is the player currently in motion")
     public boolean animatorJS$isMoving() {
         return animatorJS$movementTracker.isMoving((Entity) animatorJS$player);
     }
@@ -66,7 +67,8 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     }
 
     @Unique
-    private boolean animatorJS$isAnimActive() {
+    @Info("Determines if a playerAnimator animation is currently playing")
+    public boolean animatorJS$isAnimActive() {
         return animatorJS$getAnim() != null && animatorJS$getAnim().isActive();
     }
 
@@ -215,7 +217,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             }
             Object ease = AnimationJSHelperClass.convertObjectToDesired(easeID, "ease");
             if (ease == null) {
-                AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Invalid easeID in field: triggerAnimation. Must be an easing type. Example: \"LINEAR\"");
+                AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: triggerAnimation. Must be an easing type. Example: \"LINEAR\"");
                 return;
             }
             int easingID = ((Ease) ease).getId();

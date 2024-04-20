@@ -1,5 +1,6 @@
 package net.liopyu.animationjs.events;
 
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.player.Player;
 
@@ -16,4 +17,7 @@ public interface IAnimationTrigger {
     void animatorJS$addAnimationController(Consumer<Animations<Player>> consumer);
 
     boolean animatorJS$isMoving();
+
+    @RemapForJS("isPlayingAnimation")
+    boolean animatorJS$isAnimActive();
 }
