@@ -5,7 +5,6 @@ import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -76,8 +75,16 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     public void stopAnimationForAll(String animationName) {
-        processAnimationForAll(animationName, (player, anim) -> {
-            PlayerAnimAPI.stopPlayerAnim(((ServerPlayer) player).serverLevel(), player, anim);
+        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        ResourceLocation aN = (ResourceLocation) animName;
+        getServer().getPlayerList().getPlayers().forEach(player -> {
+            if (player != null) {
+                PlayerAnimAPI.stopPlayerAnim(player.serverLevel(), player, aN);
+            }
         });
     }
 
