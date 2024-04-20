@@ -160,31 +160,4 @@ public class AnimationJSHelperClass {
         }
         return server.getPlayerList().getPlayer(playerUUID);
     }
-
-    public static class EntityMovementTracker {
-        private double prevX;
-        private double prevY;
-        private double prevZ;
-
-        public EntityMovementTracker() {
-            prevX = 0;
-            prevY = 0;
-            prevZ = 0;
-        }
-
-        public boolean isMoving(Entity entity) {
-            double currentX = entity.getX();
-            double currentY = entity.getY();
-            double currentZ = entity.getZ();
-
-            boolean moving = currentX != prevX || currentY != prevY || currentZ != prevZ;
-
-            // Update previous position
-            prevX = currentX;
-            prevY = currentY;
-            prevZ = currentZ;
-
-            return moving;
-        }
-    }
 }

@@ -44,12 +44,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     private int animatorJS$cooldown;
     @Unique
-    private AnimationJSHelperClass.EntityMovementTracker animatorJS$movementTracker = new AnimationJSHelperClass.EntityMovementTracker();
-    @Unique
     private ResourceLocation animatorJS$currentLocation;
-    /*public boolean animatorJS$isMoving() {
-        return animatorJS$movementTracker.isMoving((Entity) animatorJS$player);
-    }*/
     @Unique
     private double animatorJS$prevX;
     @Unique
