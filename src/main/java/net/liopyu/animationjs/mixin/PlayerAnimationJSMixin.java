@@ -72,7 +72,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         return animatorJS$getAnim() != null && animatorJS$getAnim().isActive();
     }
 
-    @Inject(method = "tick", at = @At(value = "RETURN", ordinal = 0), remap = false)
+    @Inject(method = "tick", at = @At(value = "TAIL"))
     private void animationJS$tick(CallbackInfo ci) {
         if (!animatorJS$isAnimActive()) {
             animatorJS$currentLocation = null;
