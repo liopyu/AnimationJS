@@ -36,8 +36,6 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     private final Object animatorJS$player = this;
     @Unique
     private final Map<UUID, UniversalController> animatorJS$playerControllers = new HashMap<>();
-    @Unique
-    public transient Consumer<Animations<Player>> animatorJS$animController;
 
     @Unique
     private AnimationJSHelperClass.EntityMovementTracker animatorJS$movementTracker = new AnimationJSHelperClass.EntityMovementTracker();
@@ -230,8 +228,5 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         }
     }
 
-    @Unique
-    public void animatorJS$addAnimationController(Consumer<Animations<Player>> consumer) {
-        this.animatorJS$animController = consumer;
-    }
+
 }
