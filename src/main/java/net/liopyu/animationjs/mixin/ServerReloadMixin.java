@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(KubeJSCommands.class)
 public abstract class ServerReloadMixin {
     @Inject(method = "reloadServer", at = @At(value = "RETURN", ordinal = 0), remap = false)
-    private static void entityjs$onReloadServer(CommandSourceStack source, CallbackInfoReturnable<Integer> cir) {
+    private static void animationJS$onReloadServer(CommandSourceStack source, CallbackInfoReturnable<Integer> cir) {
         AnimationJSHelperClass.serverErrorMessagesLogged.clear();
         AnimationJSHelperClass.serverWarningMessagesLogged.clear();
     }

@@ -1,8 +1,7 @@
 package net.liopyu.animationjs;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
-import net.liopyu.animationjs.utils.AnimationJSEvents;
+import net.liopyu.animationjs.events.EventHandlers;
 
 public class AnimationJSPlugin extends KubeJSPlugin {
     public void initStartup() {
@@ -11,11 +10,11 @@ public class AnimationJSPlugin extends KubeJSPlugin {
 
     @Override
     public void registerEvents() {
-        AnimationJSEvents.AnimationJSEvents.register();
+        EventHandlers.AnimationJS.register();
     }
-
-
-    @Override
+    /*@Override
     public void registerBindings(BindingsEvent event) {
-    }
+        //event.add("PlayerAnimationTrigger", PlayerAnimationTrigger.class);
+        //event.add("AbstractServerEmotePlay", AbstractServerEmotePlay.class);
+    }*/
 }
