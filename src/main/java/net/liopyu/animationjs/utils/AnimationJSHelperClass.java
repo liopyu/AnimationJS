@@ -1,7 +1,12 @@
 package net.liopyu.animationjs.utils;
 
+import dev.kosmx.playerAnim.api.layered.IAnimation;
+import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import lio.playeranimatorapi.API.PlayerAnimAPIClient;
+import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,6 +16,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.HashSet;
@@ -132,6 +138,7 @@ public class AnimationJSHelperClass {
     }
 
     public static AbstractClientPlayer getClientPlayerByUUID(UUID playerUUID) {
+        if (FMLEnvironment.dist.isDedicatedServer()) return null;
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft == null || minecraft.level == null) {
             return null;
@@ -160,4 +167,22 @@ public class AnimationJSHelperClass {
         }
         return server.getPlayerList().getPlayer(playerUUID);
     }
+
+    public static ModifierLayer<IAnimation> getanimation(AbstractClientPlayer player) {
+        ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player).get(new ResourceLocation("liosplayeranimatorapi", "factory"));
+        return anim;
+    }
+
+    public static void playClientAnimation(AbstractClientPlayer player, PlayerAnimationData data) {
+        PlayerAnimAPIClient.playPlayerAnim(player, data);
+    }
+
+    public static void playClientAnimation(AbstractClientPlayer player, ResourceLocation rl) {
+        PlayerAnimAPIClient.playPlayerAnim(player, rl);
+    }
+
+    public static boolean isClientPlayer(Object player) {
+        return player instanceof AbstractClientPlayer;
+    }
+
 }

@@ -17,8 +17,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
-public class Animations<T extends Player> {
-    public T animatable;
+public class ControllerConsumer<T extends Player> {
+   /* public T animatable;
 
     private ResourceLocation animatorJS$currentLocation;
 
@@ -190,5 +190,5 @@ public class Animations<T extends Player> {
                 PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, data);
             }
         }
-    }
+    }*/
 }

@@ -1,28 +1,50 @@
 package net.liopyu.animationjs.events;
 
 
+import com.mojang.serialization.JsonOps;
+import dev.architectury.platform.Platform;
+import dev.kosmx.playerAnim.api.layered.AnimationStack;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
+import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Ease;
+import dev.kosmx.playerAnim.impl.IAnimatedPlayer;
+import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
+import io.netty.buffer.Unpooled;
+import lio.liosmultiloaderutils.utils.NetworkManager;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
+import lio.playeranimatorapi.ModInit;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
+import lio.playeranimatorapi.geckolib.ModGeckoLibUtilsClient;
+import lio.playeranimatorapi.utils.CommonPlayerLookup;
+import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public class UniversalController extends SimplePlayerEventJS {
+    private static final Logger logger = LogManager.getLogger(ModInit.class);
     private transient ResourceLocation currentLocation;
-
 
     public UniversalController(Player p) {
         super(p);
@@ -55,10 +77,9 @@ public class UniversalController extends SimplePlayerEventJS {
         }
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(getServerPlayer().getUUID());
         if (canOverlapSelf) {
             PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
-        } else if (canPlay(aN, clientPlayer)) {
+        } else if (canPlay(aN, this.getPlayer())) {
             PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
         }
     }
@@ -91,10 +112,14 @@ public class UniversalController extends SimplePlayerEventJS {
         int easingID = ((Ease) ease).getId();
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
-        AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(getServerPlayer().getUUID());
-        if (canPlay(aN, clientPlayer)) {
-            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
+        if (canPlay(aN, this.getPlayer())) {
+            getServer().getPlayerList().getPlayers().forEach(player -> {
+                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+                //PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
+            });
         }
     }
 
@@ -128,8 +153,7 @@ public class UniversalController extends SimplePlayerEventJS {
         }
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(getServerPlayer().getUUID());
-        if (canPlay(aN, clientPlayer)) {
+        if (canPlay(aN, this.getPlayer())) {
             PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
         }
     }
@@ -143,9 +167,7 @@ public class UniversalController extends SimplePlayerEventJS {
         ResourceLocation aN = (ResourceLocation) animName;
         getServer().getPlayerList().getPlayers().forEach(player -> {
             if (player != null) {
-                AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(player.getUUID());
-                //ConsoleJS.SERVER.info("[AnimationJS]: " + player + " is playing animation: " + animName + ". CanPlay: " + canPlay(aN, clientPlayer));
-                if (canPlay(aN, clientPlayer)) {
+                if (canPlay(aN, player)) {
                     action.accept(player, aN);
                 }
             }
@@ -216,11 +238,10 @@ public class UniversalController extends SimplePlayerEventJS {
         }
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        AbstractClientPlayer clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(getServerPlayer().getUUID());
         getServer().getPlayerList().getPlayers().forEach(player -> {
             if (canOverlapSelf) {
                 PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
-            } else if (canPlay(aN, clientPlayer)) {
+            } else if (canPlay(aN, player)) {
                 PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
             }
         });
@@ -240,8 +261,7 @@ public class UniversalController extends SimplePlayerEventJS {
         });
     }
 
-
-    private boolean canPlay(ResourceLocation aN, AbstractClientPlayer player) {
+    private boolean canPlay(ResourceLocation aN, Player player) {
         if (currentLocation == null) {
             currentLocation = aN;
             return true;
@@ -256,17 +276,9 @@ public class UniversalController extends SimplePlayerEventJS {
         return false;
     }
 
-    private IAnimation animatorJS$getAnim(AbstractClientPlayer player) {
-        if (player == null) return null;
-        ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player).get(new ResourceLocation("liosplayeranimatorapi", "factory"));
-        if (anim != null) {
-            return anim.getAnimation();
-        } else return null;
-    }
-
-
-    private boolean isAnimActive(AbstractClientPlayer player) {
-        return animatorJS$getAnim(player) != null && animatorJS$getAnim(player).isActive();
+    private boolean isAnimActive(Player player) {
+        UUID playerUUID = player.getUUID();
+        return AnimationStateTracker.getAnimationState(playerUUID);
     }
 }
 
