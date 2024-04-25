@@ -50,6 +50,42 @@ public class UniversalController extends SimplePlayerEventJS {
         super(p);
     }
 
+    private void processAnimationForAll(Object animationName, BiConsumer<Player, ResourceLocation> action) {
+        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        ResourceLocation aN = (ResourceLocation) animName;
+        getServer().getPlayerList().getPlayers().forEach(player -> {
+            if (player != null) {
+                if (canPlay(aN, player)) {
+                    action.accept(player, aN);
+                }
+            }
+        });
+    }
+
+    private boolean canPlay(ResourceLocation aN, Player player) {
+        if (currentLocation == null) {
+            currentLocation = aN;
+            return true;
+        }
+        if (!isAnimActive(player)) {
+            currentLocation = aN;
+            return true;
+        } else if (!currentLocation.toString().equals(aN.toString())) {
+            currentLocation = aN;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isAnimActive(Player player) {
+        UUID playerUUID = player.getUUID();
+        return AnimationStateTracker.getAnimationState(playerUUID);
+    }
+
     private ServerPlayer getServerPlayer() {
         if (this.getPlayer() instanceof ServerPlayer serverPlayer) {
             return serverPlayer;
@@ -58,7 +94,36 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     @Info(value = """
-            Used to trigger animations on both server/client on player tick with the option
+            Used to trigger animations on player tick.
+                        
+            Example Usage:
+            ```javascript
+            event.startAnimation("animationjs:waving")
+            ```
+            """, params = {
+            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
+    })
+    public void startAnimation(Object animationName) {
+        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        ServerLevel serverLevel = getServerPlayer().serverLevel();
+        ResourceLocation aN = (ResourceLocation) animName;
+        if (canPlay(aN, this.getPlayer())) {
+            getServer().getPlayerList().getPlayers().forEach(player -> {
+                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled,
+                        null, -1, -1, false, false);
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+            });
+        }
+    }
+
+    @Info(value = """
+            Used to trigger animations on player tick with the option
             to have animations overlap themselves when played.
                         
             Example Usage:
@@ -78,14 +143,26 @@ public class UniversalController extends SimplePlayerEventJS {
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
         if (canOverlapSelf) {
-            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
+            getServer().getPlayerList().getPlayers().forEach(player -> {
+                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled,
+                        null, -1, -1, false, false);
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+            });
         } else if (canPlay(aN, this.getPlayer())) {
-            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
+            getServer().getPlayerList().getPlayers().forEach(player -> {
+                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled,
+                        null, -1, -1, false, false);
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+            });
         }
     }
 
     @Info(value = """
-            Used to trigger animations on both server/client with customizable animation data.
+            Used to trigger animations on player tick with customizable animation data.
                         
             Example Usage:
             ```javascript
@@ -118,25 +195,12 @@ public class UniversalController extends SimplePlayerEventJS {
                 FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
                 buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
                 NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-                //PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
             });
         }
     }
 
-    // Stop an animation for a specific player
-    public void stopAnimation(Object animationName) {
-        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-            return;
-        }
-        ServerLevel serverLevel = getServerPlayer().serverLevel();
-        ResourceLocation aN = (ResourceLocation) animName;
-        PlayerAnimAPI.stopPlayerAnim(serverLevel, getServerPlayer(), aN);
-    }
-
     @Info(value = """
-            Used to trigger animations on both server/client on player tick.
+            Used to stop a certain player animation.
                         
             Example Usage:
             ```javascript
@@ -145,7 +209,56 @@ public class UniversalController extends SimplePlayerEventJS {
             """, params = {
             @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
     })
-    public void startAnimation(Object animationName) {
+    public void stopAnimation(Object animationName) {
+        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        ServerLevel serverLevel = getServerPlayer().serverLevel();
+        ResourceLocation aN = (ResourceLocation) animName;
+        getServer().getPlayerList().getPlayers().forEach(player -> {
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeUUID(this.getPlayer().getUUID());
+            buf.writeResourceLocation(aN);
+            NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimStopPacket, buf);
+        });
+    }
+
+    @Info(value = """
+            Used to trigger animations for all players at once.
+            on player tick.
+                        
+            Example Usage:
+            ```javascript
+            event.startAnimationForAll("animationjs:waving")
+            ```
+            """, params = {
+            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
+    })
+    public void startAnimationForAll(Object animationName) {
+        processAnimationForAll(animationName, (player, anim) -> {
+            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), anim, PlayerParts.allEnabled,
+                    null, -1, -1, false, false);
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+            NetworkManager.sendToPlayer((ServerPlayer) player, PlayerAnimAPI.playerAnimPacket, buf);
+        });
+    }
+
+    @Info(value = """
+            Used to trigger animations for all players
+            on player tick with the option to let animations overlap themselves.
+                        
+            Example Usage:
+            ```javascript
+            event.startAnimation("animationjs:waving", true)
+            ```
+            """, params = {
+            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
+            @Param(name = "canOverlapSelf", value = "Boolean: Whether the animation can overlap itself if it's already playing")
+    })
+    public void startAnimationForAll(Object animationName, boolean canOverlapSelf) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
         if (animName == null) {
             AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
@@ -153,23 +266,19 @@ public class UniversalController extends SimplePlayerEventJS {
         }
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        if (canPlay(aN, this.getPlayer())) {
-            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
-        }
-    }
-
-    private void processAnimationForAll(Object animationName, BiConsumer<Player, ResourceLocation> action) {
-        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-            return;
-        }
-        ResourceLocation aN = (ResourceLocation) animName;
         getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (player != null) {
-                if (canPlay(aN, player)) {
-                    action.accept(player, aN);
-                }
+            if (canOverlapSelf) {
+                PlayerAnimationData data = new PlayerAnimationData(player.getUUID(), aN, PlayerParts.allEnabled,
+                        null, -1, -1, false, false);
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+            } else if (canPlay(aN, player)) {
+                PlayerAnimationData data = new PlayerAnimationData(player.getUUID(), aN, PlayerParts.allEnabled,
+                        null, -1, -1, false, false);
+                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
             }
         });
     }
@@ -197,88 +306,11 @@ public class UniversalController extends SimplePlayerEventJS {
         int easingID = ((Ease) ease).getId();
         processAnimationForAll(animationID, (player, anim) -> {
             PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), anim, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
-            PlayerAnimAPI.playPlayerAnim(((ServerPlayer) player).serverLevel(), player, data);
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
+            NetworkManager.sendToPlayer((ServerPlayer) player, PlayerAnimAPI.playerAnimPacket, buf);
         });
     }
 
-    @Info(value = """
-            Used to trigger animations on both server/client for every player at once
-            on player tick.
-                        
-            Example Usage:
-            ```javascript
-            event.startAnimationForAll("animationjs:waving")
-            ```
-            """, params = {
-            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
-    })
-    public void startAnimationForAll(Object animationName) {
-        processAnimationForAll(animationName, (player, anim) -> {
-            PlayerAnimAPI.playPlayerAnim(((ServerPlayer) player).serverLevel(), player, anim);
-        });
-    }
-
-    @Info(value = """
-            Used to trigger animations on both server/client for every player at once
-            on player tick with the option to let animations overlap themselves.
-                        
-            Example Usage:
-            ```javascript
-            event.startAnimation("animationjs:waving", true)
-            ```
-            """, params = {
-            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
-            @Param(name = "canOverlapSelf", value = "Boolean: Whether the animation can overlap itself if it's already playing")
-    })
-    public void startAnimationForAll(Object animationName, boolean canOverlapSelf) {
-        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
-            return;
-        }
-        ServerLevel serverLevel = getServerPlayer().serverLevel();
-        ResourceLocation aN = (ResourceLocation) animName;
-        getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (canOverlapSelf) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
-            } else if (canPlay(aN, player)) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
-            }
-        });
-    }
-
-    public void stopAnimationForAll(String animationName) {
-        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-            return;
-        }
-        ResourceLocation aN = (ResourceLocation) animName;
-        getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (player != null) {
-                PlayerAnimAPI.stopPlayerAnim(player.serverLevel(), player, aN);
-            }
-        });
-    }
-
-    private boolean canPlay(ResourceLocation aN, Player player) {
-        if (currentLocation == null) {
-            currentLocation = aN;
-            return true;
-        }
-        if (!isAnimActive(player)) {
-            currentLocation = aN;
-            return true;
-        } else if (!currentLocation.toString().equals(aN.toString())) {
-            currentLocation = aN;
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isAnimActive(Player player) {
-        UUID playerUUID = player.getUUID();
-        return AnimationStateTracker.getAnimationState(playerUUID);
-    }
 }
 
