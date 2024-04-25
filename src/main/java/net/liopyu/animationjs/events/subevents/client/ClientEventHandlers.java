@@ -1,4 +1,4 @@
-package net.liopyu.animationjs.client;
+package net.liopyu.animationjs.events.subevents.client;
 
 
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -8,7 +8,6 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.liopyu.animationjs.AnimationJS;
 import net.liopyu.animationjs.network.NetworkHandler;
 import net.liopyu.animationjs.network.packet.AnimationStateUpdatePacket;
-import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
