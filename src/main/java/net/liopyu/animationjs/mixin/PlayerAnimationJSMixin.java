@@ -1,30 +1,30 @@
 package net.liopyu.animationjs.mixin;
 
-import dev.kosmx.playerAnim.api.layered.IAnimation;
-import dev.kosmx.playerAnim.api.layered.ModifierLayer;
+import com.mojang.serialization.JsonOps;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import io.netty.buffer.Unpooled;
+import lio.liosmultiloaderutils.utils.NetworkManager;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
+import lio.playeranimatorapi.ModInit;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
-import net.liopyu.animationjs.AnimationJS;
 import net.liopyu.animationjs.events.*;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.forgespi.Environment;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.UUID;
 
 @Mixin(Player.class)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
@@ -32,7 +32,8 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     private static final double POSITION_THRESHOLD = 0.001;
     @Unique
     private static final int COOLDOWN_TICKS = 1;
-
+    @Unique
+    private static final Logger animatorJS$logger = LogManager.getLogger(ModInit.class);
     @Unique
     private transient Object animatorJS$player = this;
     @Unique
@@ -47,7 +48,6 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     private double animatorJS$prevY;
     @Unique
     private double animatorJS$prevZ;
-
     @Unique
     private boolean animatorJS$isMoving = false;
 
@@ -144,7 +144,13 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             ServerLevel serverLevel = serverPlayer.serverLevel();
             ResourceLocation aN = (ResourceLocation) animName;
             if (animatorJS$canPlay(aN)) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
+                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
+                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled,
+                            null, -1, -1, false, false);
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
+                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+                });
             }
         }
     }
@@ -174,9 +180,21 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             ServerLevel serverLevel = serverPlayer.serverLevel();
             ResourceLocation aN = (ResourceLocation) animName;
             if (canOverlapSelf) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
+                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
+                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled,
+                            null, -1, -1, false, false);
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
+                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+                });
             } else if (animatorJS$canPlay(aN)) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
+                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
+                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled,
+                            null, -1, -1, false, false);
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
+                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+                });
             }
         }
     }
@@ -211,11 +229,14 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                 return;
             }
             int easingID = ((Ease) ease).getId();
-            ServerLevel serverLevel = serverPlayer.serverLevel();
             ResourceLocation aN = (ResourceLocation) animName;
-            PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
             if (animatorJS$canPlay(aN)) {
-                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, data);
+                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
+                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
+                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
+                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
+                });
             }
         }
     }

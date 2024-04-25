@@ -50,22 +50,6 @@ public class UniversalController extends SimplePlayerEventJS {
         super(p);
     }
 
-    private void processAnimationForAll(Object animationName, BiConsumer<Player, ResourceLocation> action) {
-        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
-            return;
-        }
-        ResourceLocation aN = (ResourceLocation) animName;
-        getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (player != null) {
-                if (canPlay(aN, player)) {
-                    action.accept(player, aN);
-                }
-            }
-        });
-    }
-
     private boolean canPlay(ResourceLocation aN, Player player) {
         if (currentLocation == null) {
             currentLocation = aN;
@@ -224,93 +208,5 @@ public class UniversalController extends SimplePlayerEventJS {
             NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimStopPacket, buf);
         });
     }
-
-    @Info(value = """
-            Used to trigger animations for all players at once.
-            on player tick.
-                        
-            Example Usage:
-            ```javascript
-            event.startAnimationForAll("animationjs:waving")
-            ```
-            """, params = {
-            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
-    })
-    public void startAnimationForAll(Object animationName) {
-        processAnimationForAll(animationName, (player, anim) -> {
-            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), anim, PlayerParts.allEnabled,
-                    null, -1, -1, false, false);
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-            NetworkManager.sendToPlayer((ServerPlayer) player, PlayerAnimAPI.playerAnimPacket, buf);
-        });
-    }
-
-    @Info(value = """
-            Used to trigger animations for all players
-            on player tick with the option to let animations overlap themselves.
-                        
-            Example Usage:
-            ```javascript
-            event.startAnimation("animationjs:waving", true)
-            ```
-            """, params = {
-            @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
-            @Param(name = "canOverlapSelf", value = "Boolean: Whether the animation can overlap itself if it's already playing")
-    })
-    public void startAnimationForAll(Object animationName, boolean canOverlapSelf) {
-        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
-        if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
-            return;
-        }
-        ServerLevel serverLevel = getServerPlayer().serverLevel();
-        ResourceLocation aN = (ResourceLocation) animName;
-        getServer().getPlayerList().getPlayers().forEach(player -> {
-            if (canOverlapSelf) {
-                PlayerAnimationData data = new PlayerAnimationData(player.getUUID(), aN, PlayerParts.allEnabled,
-                        null, -1, -1, false, false);
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-            } else if (canPlay(aN, player)) {
-                PlayerAnimationData data = new PlayerAnimationData(player.getUUID(), aN, PlayerParts.allEnabled,
-                        null, -1, -1, false, false);
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-            }
-        });
-    }
-
-    @Info(value = """
-            Used to trigger animations for all players at once with customizable animation data.
-                        
-            Example Usage:
-            ```javascript
-            event.startAnimationForAll("animationjs:waving", 1, "linear", true, false);
-            ```
-            """, params = {
-            @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
-            @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
-            @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
-            @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
-            @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations")
-    })
-    public void startAnimationForAll(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important) {
-        Object ease = AnimationJSHelperClass.convertObjectToDesired(easeID, "ease");
-        if (ease == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: triggerAnimation. Must be an easing type. Example: \"LINEAR\"");
-            return;
-        }
-        int easingID = ((Ease) ease).getId();
-        processAnimationForAll(animationID, (player, anim) -> {
-            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), anim, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-            NetworkManager.sendToPlayer((ServerPlayer) player, PlayerAnimAPI.playerAnimPacket, buf);
-        });
-    }
-
 }
 
