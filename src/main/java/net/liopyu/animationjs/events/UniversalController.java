@@ -65,9 +65,19 @@ public class UniversalController extends SimplePlayerEventJS {
         return false;
     }
 
-    private boolean isAnimActive(Player player) {
+    public boolean isAnimActive(Player player) {
         UUID playerUUID = player.getUUID();
-        return AnimationStateTracker.getAnimationState(playerUUID);
+        if (player.getServer().isDedicatedServer()) {
+            return AnimationStateTracker.getAnimationState(playerUUID);
+        } else {
+            var clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(playerUUID);
+            ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(clientPlayer).get(new ResourceLocation("liosplayeranimatorapi", "factory"));
+            if (anim == null) {
+                return false;
+            }
+            boolean isAnimationActive = anim.isActive();
+            return isAnimationActive;
+        }
     }
 
     private ServerPlayer getServerPlayer() {

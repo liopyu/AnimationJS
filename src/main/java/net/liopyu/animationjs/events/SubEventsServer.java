@@ -17,7 +17,7 @@ import java.util.UUID;
 public class SubEventsServer {
     public static final Map<UUID, UniversalController> thisList = new HashMap<>();
 
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() == null) return;
         UUID playerUUID = event.getEntity().getUUID();
@@ -27,13 +27,12 @@ public class SubEventsServer {
             controller = new UniversalController(player);
             thisList.put(playerUUID, controller);
         }
-    }*/
+    }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (EventHandlers.universalController.hasListeners()) {
-            //UniversalController cont = SubEventsServer.thisList.get(event.player.getUUID());
-            UniversalController cont = new UniversalController(event.player);
+        if (event.player instanceof ServerPlayer serverPlayer && EventHandlers.universalController.hasListeners()) {
+            UniversalController cont = SubEventsServer.thisList.get(serverPlayer.getUUID());
             EventHandlers.universalController.post(cont);
         }
     }
