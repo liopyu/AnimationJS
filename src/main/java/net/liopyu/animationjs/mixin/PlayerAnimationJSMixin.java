@@ -1,19 +1,15 @@
 package net.liopyu.animationjs.mixin;
 
-import com.mojang.serialization.JsonOps;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
-import io.netty.buffer.Unpooled;
-import lio.liosmultiloaderutils.utils.NetworkManager;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
 import lio.playeranimatorapi.ModInit;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
-import net.liopyu.animationjs.events.*;
+import net.liopyu.animationjs.events.IAnimationTrigger;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
