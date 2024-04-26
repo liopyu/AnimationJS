@@ -1,7 +1,6 @@
 package net.liopyu.animationjs.events;
 
 
-import com.mojang.serialization.JsonOps;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
@@ -9,26 +8,19 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
-import io.netty.buffer.Unpooled;
-import lio.liosmultiloaderutils.utils.NetworkManager;
 import lio.playeranimatorapi.API.PlayerAnimAPI;
-import lio.playeranimatorapi.ModInit;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.UUID;
 
 public class UniversalController extends SimplePlayerEventJS {
-    private static final Logger logger = LogManager.getLogger(ModInit.class);
     private transient ResourceLocation currentLocation;
 
     public UniversalController(Player p) {
@@ -91,16 +83,9 @@ public class UniversalController extends SimplePlayerEventJS {
             AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
             return;
         }
-        ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
         if (canPlay(aN, this.getPlayer())) {
-            getServer().getPlayerList().getPlayers().forEach(player -> {
-                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled,
-                        null, -1, -1, false, false);
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-            });
+            PlayerAnimAPI.playPlayerAnim(getServerPlayer().serverLevel(), getServerPlayer(), aN);
         }
     }
 
@@ -125,21 +110,9 @@ public class UniversalController extends SimplePlayerEventJS {
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
         if (canOverlapSelf) {
-            getServer().getPlayerList().getPlayers().forEach(player -> {
-                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled,
-                        null, -1, -1, false, false);
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-            });
+            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
         } else if (canPlay(aN, this.getPlayer())) {
-            getServer().getPlayerList().getPlayers().forEach(player -> {
-                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled,
-                        null, -1, -1, false, false);
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-            });
+            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), aN);
         }
     }
 
@@ -168,16 +141,12 @@ public class UniversalController extends SimplePlayerEventJS {
             AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: triggerAnimation. Must be an easing type. Example: \"LINEAR\"");
             return;
         }
-        int easingID = ((Ease) ease).getId();
-        ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
         if (canPlay(aN, this.getPlayer())) {
-            getServer().getPlayerList().getPlayers().forEach(player -> {
-                PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, logger::warn)));
-                NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-            });
+            int easingID = ((Ease) ease).getId();
+            ServerLevel serverLevel = getServerPlayer().serverLevel();
+            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
+            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
         }
     }
 
@@ -199,12 +168,7 @@ public class UniversalController extends SimplePlayerEventJS {
         }
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        getServer().getPlayerList().getPlayers().forEach(player -> {
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            buf.writeUUID(this.getPlayer().getUUID());
-            buf.writeResourceLocation(aN);
-            NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimStopPacket, buf);
-        });
+        PlayerAnimAPI.stopPlayerAnim(serverLevel, getServerPlayer(), aN);
     }
 }
 

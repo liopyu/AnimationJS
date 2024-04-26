@@ -146,7 +146,7 @@ dependencies {
     //implementation fg.deobf("curse.maven:emotecraft-forge-403422:4632460")
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
     implementation fg.deobf("lio.playeranimatorapi:liosplayeranimatorapi-forge-$minecraft_version-$liosAPI_version:$liosAPI_version")
-    implementation fg.deobf('lio.liosmultiloaderutils:liosmultiloaderutils-forge-1.20.1-1.2.2:1.2.2')
+    implementation fg.deobf('lio.liosmultiloaderutils:liosmultiloaderutils-forge-1.20.1-1.2.3:1.2.3')
     repositories {
         mavenCentral()
     }
