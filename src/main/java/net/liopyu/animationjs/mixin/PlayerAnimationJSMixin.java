@@ -141,16 +141,9 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                 AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
                 return;
             }
-            ServerLevel serverLevel = serverPlayer.serverLevel();
             ResourceLocation aN = (ResourceLocation) animName;
             if (animatorJS$canPlay(aN)) {
-                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
-                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled,
-                            null, -1, -1, false, false);
-                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
-                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-                });
+                PlayerAnimAPI.playPlayerAnim(serverPlayer.serverLevel(), serverPlayer, aN);
             }
         }
     }
@@ -180,21 +173,9 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             ServerLevel serverLevel = serverPlayer.serverLevel();
             ResourceLocation aN = (ResourceLocation) animName;
             if (canOverlapSelf) {
-                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
-                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled,
-                            null, -1, -1, false, false);
-                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
-                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-                });
+                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
             } else if (animatorJS$canPlay(aN)) {
-                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
-                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled,
-                            null, -1, -1, false, false);
-                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
-                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-                });
+                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, aN);
             }
         }
     }
@@ -228,15 +209,12 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                 AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: triggerAnimation. Must be an easing type. Example: \"LINEAR\"");
                 return;
             }
-            int easingID = ((Ease) ease).getId();
             ResourceLocation aN = (ResourceLocation) animName;
             if (animatorJS$canPlay(aN)) {
-                serverPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
-                    PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
-                    FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                    buf.writeUtf(PlayerAnimAPI.gson.toJson(PlayerAnimationData.CODEC.encodeStart(JsonOps.INSTANCE, data).getOrThrow(true, animatorJS$logger::warn)));
-                    NetworkManager.sendToPlayer(player, PlayerAnimAPI.playerAnimPacket, buf);
-                });
+                int easingID = ((Ease) ease).getId();
+                ServerLevel serverLevel = serverPlayer.serverLevel();
+                PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
+                PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, data);
             }
         }
     }
