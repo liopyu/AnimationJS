@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import lio.playeranimatorapi.API.PlayerAnimAPIClient;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
+import lio.playeranimatorapi.modifier.CommonModifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -19,9 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class AnimationJSHelperClass {
     public static final Set<String> clientErrorMessagesLogged = new HashSet<>();
@@ -75,6 +74,7 @@ public class AnimationJSHelperClass {
         return switch (outputType.toLowerCase()) {
             case "resourcelocation" -> convertToResourceLocation(input);
             case "ease" -> easeFromString(input);
+            case "modifierlist" -> modifierList(input);
             default -> input;
         };
     }
@@ -127,6 +127,18 @@ public class AnimationJSHelperClass {
         return null;
     }
 
+    public static List<CommonModifier> modifierList(Object input) {
+        if (input instanceof List<?> array) {
+            List<CommonModifier> list = new ArrayList<>();
+            for (Object obj : array) {
+                if (obj instanceof String string) {
+                    list.add(new CommonModifier(new ResourceLocation(string), null));
+                }
+            }
+            return list;
+        }
+        return null;
+    }
 
     private static ResourceLocation convertToResourceLocation(Object input) {
         if (input instanceof ResourceLocation) {
