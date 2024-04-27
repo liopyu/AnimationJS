@@ -225,7 +225,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                         
             Example Usage:
             ```javascript
-            event.triggerAnimation("animationjs:waving", event.player, 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
+            event.triggerAnimation("animationjs:waving", 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
             	parts.leftArm.setEnabled(false)
             });
             ```

@@ -127,7 +127,7 @@ public class UniversalController extends SimplePlayerEventJS {
                         
             Example Usage:
             ```javascript
-            event.startAnimation("animationjs:waving", event.player, 1, "linear", true, false);
+            event.startAnimation("animationjs:waving", 1, "linear", true, false);
             ```
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
@@ -161,8 +161,8 @@ public class UniversalController extends SimplePlayerEventJS {
                         
             Example Usage:
             ```javascript
-            event.startAnimation("animationjs:waving", event.player, 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
-            	parts.leftArm.setEnabled(false)
+            event.startAnimation("animationjs:smith", 1, "linear", true, false, ["playeranimatorapi:headposboundcamera"], parts => {
+            	parts.leftArm.setEnabled(false);
             });
             ```
             """, params = {
