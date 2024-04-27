@@ -15,6 +15,7 @@ import lio.playeranimatorapi.API.PlayerAnimAPI;
 import lio.playeranimatorapi.ModInit;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
+import lio.playeranimatorapi.modifier.CommonModifier;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.network.FriendlyByteBuf;
@@ -25,7 +26,9 @@ import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class UniversalController extends SimplePlayerEventJS {
     private static final Logger logger = LogManager.getLogger(ModInit.class);
@@ -76,7 +79,7 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     @Info(value = """
-            Used to trigger animations on player tick.
+            Used to play animations on player tick.
                         
             Example Usage:
             ```javascript
@@ -88,7 +91,7 @@ public class UniversalController extends SimplePlayerEventJS {
     public void startAnimation(Object animationName) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
         if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: startAnimation. Must be a ResourceLocation.");
             return;
         }
         ResourceLocation aN = (ResourceLocation) animName;
@@ -98,7 +101,7 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     @Info(value = """
-            Used to trigger animations on player tick with the option
+            Used to play animations on player tick with the option
             to have animations overlap themselves when played.
                         
             Example Usage:
@@ -112,7 +115,7 @@ public class UniversalController extends SimplePlayerEventJS {
     public void startAnimation(Object animationName, boolean canOverlapSelf) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationName, "resourcelocation");
         if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: startAnimation. Must be a ResourceLocation.");
             return;
         }
         ServerLevel serverLevel = getServerPlayer().getLevel();
@@ -125,11 +128,11 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     @Info(value = """
-            Used to trigger animations on player tick with customizable animation data.
+            Used to play animations on player tick with customizable animation data.
                         
             Example Usage:
             ```javascript
-            event.startAnimation("animationjs:waving", event.player, 1, "linear", true, false);
+            event.startAnimation("animationjs:waving", 1, "linear", true, false);
             ```
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
@@ -141,12 +144,12 @@ public class UniversalController extends SimplePlayerEventJS {
     public void startAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationID, "resourcelocation");
         if (animName == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: triggerAnimation. Must be a ResourceLocation.");
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: startAnimation. Must be a ResourceLocation.");
             return;
         }
         Object ease = AnimationJSHelperClass.convertObjectToDesired(easeID, "ease");
         if (ease == null) {
-            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: triggerAnimation. Must be an easing type. Example: \"LINEAR\"");
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: startAnimation. Must be an easing type. Example: \"LINEAR\"");
             return;
         }
         ResourceLocation aN = (ResourceLocation) animName;
@@ -159,11 +162,62 @@ public class UniversalController extends SimplePlayerEventJS {
     }
 
     @Info(value = """
+            Used to play animations on player tick with customizable animation data.
+                        
+            Example Usage:
+            ```javascript
+            event.startAnimation("animationjs:smith", 1, "linear", true, false, ["playeranimatorapi:headposboundcamera"], parts => {
+            	parts.leftArm.setEnabled(false);
+            });
+            ```
+            """, params = {
+            @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
+            @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
+            @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
+            @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
+            @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations"),
+            @Param(name = "modifiers", value = "List<String>: List of modifiers to apply to the animation"),
+            @Param(name = "partsConsumer", value = "Consumer<PlayerParts>: Consumer to modify player parts such as part visibility, rotation ect.")
+    })
+    public void startAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important, List<?> modifiers, Consumer<PlayerParts> partsConsumer) {
+        Object animName = AnimationJSHelperClass.convertObjectToDesired(animationID, "resourcelocation");
+        if (animName == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: startAnimation. Must be a ResourceLocation.");
+            return;
+        }
+        Object ease = AnimationJSHelperClass.convertObjectToDesired(easeID, "ease");
+        if (ease == null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid easeID in field: startAnimation. Must be an easing type. Example: \"LINEAR\"");
+            return;
+        }
+        Object modifierlist = AnimationJSHelperClass.convertObjectToDesired(modifiers, "modifierlist");
+        if (modifierlist == null && modifiers != null) {
+            AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid modifiers in field: startAnimation. Must be a string list of modifiers or null.");
+            return;
+        }
+        ResourceLocation aN = (ResourceLocation) animName;
+        if (canPlay(aN, this.getPlayer())) {
+            int easingID = ((Ease) ease).getId();
+            PlayerParts playerParts = new PlayerParts();
+            if (partsConsumer != null) {
+                try {
+                    partsConsumer.accept(playerParts);
+                } catch (Exception t) {
+                    AnimationJSHelperClass.logServerErrorMessageOnceCatchable("[AnimationJS]: Error in AnimationJS.universalController for method startAnimation", t);
+                }
+            }
+            ServerLevel serverLevel = getServerPlayer().getLevel();
+            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, playerParts, (List<CommonModifier>) modifierlist, transitionLength, easingID, firstPersonEnabled, important);
+            PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
+        }
+    }
+
+    @Info(value = """
             Used to stop a certain player animation.
                         
             Example Usage:
             ```javascript
-            event.startAnimation("animationjs:waving")
+            event.stopAnimation("animationjs:waving")
             ```
             """, params = {
             @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
