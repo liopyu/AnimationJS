@@ -9,14 +9,7 @@
 </ul>
 <h2>Usage:&nbsp;</h2>
 <p>For detailed documentation on how to add an animation controller or trigger player animations, visit the AnimationJS <a href="https://github.com/liopyu/AnimationJS/wiki" rel="nofollow">Wiki</a> page!</p>
-<h2>Planned For The Future:</h2>
-<ul>
-<li>Optional integration with <a href="https://www.curseforge.com/minecraft/mc-mods/emotecraft-forge" rel="nofollow">EmoteCraft</a>&nbsp;Animations</li>
-<li><a href="https://www.curseforge.com/minecraft/mc-mods/bendy-lib" rel="nofollow">BendyLib</a>&nbsp;Support</li>
-<li><del>&nbsp;Server Sided Emote Support </del>&nbsp; <strong>Done</strong></li>
-<li>Custom animation building</li>
-<li><del>Custom Player animation controllers</del>&nbsp; <strong>Done</strong></li>
-</ul>
+
 <p>&nbsp;</p>
 <h2>Dependencies:</h2>
 <ul>
