@@ -136,7 +136,10 @@ repositories {
         }
     }
     maven { url "https://dl.cloudsmith.io/public/lio/multiloaderutils/maven/" }
-
+    maven {
+        name = "Illusive Soulworks maven"
+        url = "https://maven.theillusivec4.top/"
+    }
 }
 
 dependencies {
@@ -145,6 +148,8 @@ dependencies {
     /*implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
     implementation fg.deobf("curse.maven:bendy-lib-623373:4550371")
     implementation fg.deobf("curse.maven:emotecraft-forge-403422:4632460")*/
+    compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api"))
+    runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}"))
     //PlayerAnimator/PlayerAnimatorApi Dependencies
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
     implementation fg.deobf("lio.playeranimatorapi:liosplayeranimatorapi-forge-$minecraft_version-$liosAPI_version:$liosAPI_version")

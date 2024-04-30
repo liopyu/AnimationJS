@@ -17,7 +17,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
@@ -75,10 +78,57 @@ public class AnimationJSHelperClass {
             case "resourcelocation" -> convertToResourceLocation(input);
             case "ease" -> easeFromString(input);
             case "modifierlist" -> modifierList(input);
+            case "integer" -> convertToInteger(input);
+            case "double" -> convertToDouble(input);
+            case "float" -> convertToFloat(input);
+            case "itemstack" -> getStack(input);
             default -> input;
         };
     }
 
+    public static ItemStack getStack(Object input) {
+        if (input instanceof String) {
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(new ResourceLocation((String) input))).getDefaultInstance();
+        } else if (input instanceof ResourceLocation) {
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue((ResourceLocation) input)).getDefaultInstance();
+        } else if (input instanceof ItemStack) {
+            return (ItemStack) input;
+        } else if (input instanceof Item item) {
+            return item.getDefaultInstance();
+        } else {
+            return null;
+        }
+    }
+
+    private static Integer convertToInteger(Object input) {
+        if (input instanceof Integer) {
+            return (Integer) input;
+        } else if (input instanceof Double || input instanceof Float) {
+            return ((Number) input).intValue();
+        } else {
+            return null;
+        }
+    }
+
+    private static Double convertToDouble(Object input) {
+        if (input instanceof Double) {
+            return (Double) input;
+        } else if (input instanceof Integer || input instanceof Float) {
+            return ((Number) input).doubleValue();
+        } else {
+            return null;
+        }
+    }
+
+    private static Float convertToFloat(Object input) {
+        if (input instanceof Float) {
+            return (Float) input;
+        } else if (input instanceof Integer || input instanceof Double) {
+            return ((Number) input).floatValue();
+        } else {
+            return null;
+        }
+    }
 
     // Method to convert a string representation of easing function name to Ease enum
     public static Ease easeFromString(Object functionName) {
