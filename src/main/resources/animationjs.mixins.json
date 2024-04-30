@@ -10,6 +10,7 @@
     "ServerReloadMixin"
   ],
   "client": [
+    "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
