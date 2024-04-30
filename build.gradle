@@ -142,9 +142,9 @@ repositories {
 dependencies {
     runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
     //Optional Dependencies
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
+    /*implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
     implementation fg.deobf("curse.maven:bendy-lib-623373:4550371")
-    implementation fg.deobf("curse.maven:emotecraft-forge-403422:4632460")
+    implementation fg.deobf("curse.maven:emotecraft-forge-403422:4632460")*/
     //PlayerAnimator/PlayerAnimatorApi Dependencies
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20")
     implementation fg.deobf("lio.playeranimatorapi:liosplayeranimatorapi-forge-$minecraft_version-$liosAPI_version:$liosAPI_version")

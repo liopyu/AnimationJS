@@ -12,6 +12,8 @@ import lio.playeranimatorapi.API.PlayerAnimAPI;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
 import lio.playeranimatorapi.modifier.CommonModifier;
+import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
+import net.liopyu.animationjs.events.subevents.server.ServerEventHandlers;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +34,7 @@ public class UniversalController extends SimplePlayerEventJS {
     public UniversalController(Player p) {
         super(p);
     }
+
 
     private boolean canPlay(ResourceLocation aN, Player player) {
         if (currentLocation == null) {

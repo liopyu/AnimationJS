@@ -6,20 +6,33 @@ import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.liopyu.animationjs.AnimationJS;
+import net.liopyu.animationjs.events.EventHandlers;
+import net.liopyu.animationjs.events.PlayerRenderer;
+import net.liopyu.animationjs.events.UniversalController;
+import net.liopyu.animationjs.events.subevents.server.ServerEventHandlers;
 import net.liopyu.animationjs.network.NetworkHandler;
 import net.liopyu.animationjs.network.packet.AnimationStateUpdatePacket;
+import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static net.liopyu.animationjs.AnimationJS.MODID;
 
 @Mod.EventBusSubscriber(modid = AnimationJS.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandlers {
+
+    public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.PlayerTickEvent event) {
@@ -32,6 +45,19 @@ public class ClientEventHandlers {
             AnimationStateUpdatePacket packet = new AnimationStateUpdatePacket(clientPlayer.getUUID(), isAnimationActive);
             NetworkHandler.sendToServer(packet);
         }
+
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        /*if (event.getEntity() == null) return;
+        UUID playerUUID = event.getEntity().getUUID();
+        PlayerRenderer renderer = thisRenderList.get(playerUUID);
+        if (renderer == null) {
+            AbstractClientPlayer player = AnimationJSHelperClass.getClientPlayerByUUID(playerUUID);
+            renderer = new PlayerRenderer(player);
+            thisRenderList.put(playerUUID, renderer);
+        }*/
     }
 
     @SubscribeEvent
