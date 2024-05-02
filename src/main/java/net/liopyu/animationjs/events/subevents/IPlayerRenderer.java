@@ -13,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 //@OnlyIn(Dist.CLIENT)
 @RemapPrefixForJS("animatorJS$")
 public interface IPlayerRenderer {
-    void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float yRotationOffset, float xRotation, float zRotation);
+    void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float xRotation, float yRotation, float zRotation);
 
-    void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float yRotationOffset, float xRotation, float zRotation, float finalXOffset, float finalZOffset);
+    void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float xRotation, float yRotation, float zRotation, float finalXOffset, float finalYOffset, float finalZOffset);
 }

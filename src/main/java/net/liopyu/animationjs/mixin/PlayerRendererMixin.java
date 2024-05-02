@@ -57,61 +57,23 @@ public abstract class PlayerRendererMixin implements IPlayerRenderer {
         }
     }
 
-
-    /*@Unique
-    public void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float yRotationOffset, float xRotation, float zRotation) {
-        Object obj = AnimationJSHelperClass.convertObjectToDesired(itemStack, "itemstack");
-        if (obj != null) {
-            PoseStack poseStack = context.poseStack;
-            MultiBufferSource buffer = context.buffer;
-            int packedLight = context.packedLight;
-            float partialTicks = context.partialTicks;
-            AbstractClientPlayer player = context.entity;
-            float playerYaw = Mth.lerp(partialTicks, player.yBodyRotO, player.yBodyRot) * ((float) Math.PI / 180.0F);
-            double xTranslate = Math.cos(playerYaw) * xOffset;
-            double zTranslate = Math.sin(playerYaw) * zOffset;
-
-            float yRotation = 90.0F - player.yBodyRotO + yRotationOffset;
-            float boxyRotx = animatorJS$getRenderer().getModel().body.xRot;
-            float boxyRoty = animatorJS$getRenderer().getModel().body.yRot;
-            float boxyRotz = animatorJS$getRenderer().getModel().body.zRot;
-            poseStack.pushPose();
-            poseStack.translate(xTranslate, yOffset, zTranslate);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRotation - boxyRoty));
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation - boxyRotx));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation - boxyRotz));
-
-            Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
-
-            poseStack.popPose();
-        } else {
-            AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");
-        }
-    }*/
-
     @Unique
-    public void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float yRotationOffset, float xRotation, float zRotation, float finalXOffset, float finalZOffset) {
+    public void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float xRotation, float yRotation, float zRotation) {
         Object obj = AnimationJSHelperClass.convertObjectToDesired(itemStack, "itemstack");
         if (obj != null) {
             PoseStack poseStack = context.poseStack;
             MultiBufferSource buffer = context.buffer;
             int packedLight = context.packedLight;
-            float partialTicks = context.partialTicks;
             AbstractClientPlayer player = context.entity;
-            float playerYaw = Mth.lerp(partialTicks, player.yBodyRotO, player.yBodyRot) * ((float) Math.PI / 180.0F);
-            double xTranslate = Math.cos(playerYaw + finalXOffset) * xOffset;
-            double zTranslate = Math.sin(playerYaw + finalZOffset) * zOffset;
-
-            float yRotation = 90.0F - player.yBodyRotO + yRotationOffset;
+            float yRotationOffset = 90.0F - player.yBodyRotO + yRotation;
             float boxyRotx = animatorJS$getRenderer().getModel().body.xRot;
             float boxyRoty = animatorJS$getRenderer().getModel().body.yRot;
             float boxyRotz = animatorJS$getRenderer().getModel().body.zRot;
             poseStack.pushPose();
-            poseStack.translate(xTranslate, yOffset, zTranslate);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRotation - boxyRoty));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset - boxyRoty));
             poseStack.mulPose(Axis.XP.rotationDegrees(xRotation - boxyRotx));
             poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation - boxyRotz));
-
+            poseStack.translate(xOffset, -yOffset, zOffset);
             Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
 
             poseStack.popPose();
@@ -119,57 +81,4 @@ public abstract class PlayerRendererMixin implements IPlayerRenderer {
             AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");
         }
     }
-
-    @Unique
-    public void animatorJS$renderBodyItem(Object itemStack, ContextUtils.PlayerRenderContext context, float xOffset, float yOffset, float zOffset, float yRotationOffset, float xRotation, float zRotation) {
-        Object obj = AnimationJSHelperClass.convertObjectToDesired(itemStack, "itemstack");
-        if (obj != null) {
-            PoseStack poseStack = context.poseStack;
-            MultiBufferSource buffer = context.buffer;
-            int packedLight = context.packedLight;
-            float partialTicks = context.partialTicks;
-            AbstractClientPlayer player = context.entity;
-            float playerYaw = Mth.lerp(partialTicks, player.yBodyRotO, player.yBodyRot) * ((float) Math.PI / 180.0F);
-            double xTranslate = Math.cos(playerYaw + zOffset) * xOffset / zOffset;
-            double zTranslate = Math.sin(playerYaw + zOffset) * xOffset / zOffset;
-
-            float yRotation = 90.0F - player.yBodyRotO + yRotationOffset;
-            float boxyRotx = animatorJS$getRenderer().getModel().body.xRot;
-            float boxyRoty = animatorJS$getRenderer().getModel().body.yRot;
-            float boxyRotz = animatorJS$getRenderer().getModel().body.zRot;
-            poseStack.pushPose();
-            poseStack.translate(xTranslate, yOffset, zTranslate);
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRotation - boxyRoty));
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation - boxyRotx));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation - boxyRotz));
-
-            Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
-
-            poseStack.popPose();
-        } else {
-            AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");
-        }
-    }
-
-    public void renderDiamondSword(AbstractClientPlayer player, PoseStack poseStack, MultiBufferSource buffer, int packedLight, float partialTicks) {
-
-        float playerYaw = Mth.lerp(partialTicks, player.yBodyRotO, player.yBodyRot) * ((float) Math.PI / 180.0F);
-        double xOffset = Math.cos(playerYaw) * 0.3;
-        double zOffset = Math.sin(playerYaw) * 0.3;
-
-        float yRotation = 90.0F - player.yBodyRotO;
-        float xRotation = 180.0F;
-        float zRotation = 0.0F;
-
-        poseStack.pushPose();
-        poseStack.translate(xOffset, 0.5F, zOffset);
-        poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
-        poseStack.mulPose(Axis.XP.rotationDegrees(xRotation));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation));
-        ItemStack diamondSword = new ItemStack(Items.DIAMOND_SWORD);
-        Minecraft.getInstance().getItemRenderer().renderStatic(diamondSword, ItemDisplayContext.NONE, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
-        poseStack.popPose();
-    }
-
-
 }
