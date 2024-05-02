@@ -86,6 +86,7 @@ public class AnimationJSHelperClass {
         };
     }
 
+
     public static ItemStack getStack(Object input) {
         if (input instanceof String) {
             return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(new ResourceLocation((String) input))).getDefaultInstance();
