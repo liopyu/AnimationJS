@@ -38,12 +38,7 @@ import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class PlayerRenderer extends SimplePlayerEventJS {
-    private static final Map<EntityType<?>, Vec3> entityTranslations;
 
-    static {
-        entityTranslations = new HashMap<>();
-        //entityTranslations.put(EntityType.ENDERMAN, new Vec3(0, -0.8, 0));
-    }
 
     public transient ContextUtils.PlayerRenderContext playerRenderContext;
     public transient boolean eventCancelled;
@@ -64,14 +59,23 @@ public class PlayerRenderer extends SimplePlayerEventJS {
     }
 
     @Info(value = """
-            Used to get the current render context.
+            Renders an item on the body of a player with customizable position and rotation.
+                
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+            	event.renderContext
+            	const { renderer, entity, entityYaw, partialTicks, poseStack, buffer, packedLight } = event.renderContext;
+            })
+            ```
             """)
     public ContextUtils.PlayerRenderContext getRenderContext() {
         return playerRenderContext;
     }
 
     @Info(value = """
-            Used to cancel the default player renderer.
+            Used to cancel the default player renderer. Doing this will halt the default minecraft
+            renderer method but will not disable AnimationJS' animation render logic
             """)
     public void cancelDefaultRender() {
         eventCancelled = true;
@@ -106,7 +110,7 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             Example Usage:
             ```javascript
             AnimationJS.playerRenderer(event => {
-            	event.renderBodyItem("minecraft:diamond_axe", 0, 1, 0.25, 180, -90, 0)
+            	event.renderBodyItem("minecraft:diamond_axe", 0, 0.5, 0.25, 180, 0, 0)
             })
             ```
             """, params = {
@@ -159,7 +163,7 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             Example Usage:
             ```javascript
             AnimationJS.playerRenderer(event => {
-            	event.renderBodyItem("minecraft:diamond_axe", 0, 1, 0.25, 180, -90, 0, 15)
+            	event.renderBodyItem("minecraft:diamond_axe", 0.25, 1, 0, 0, 90, 0,15)
             })
             ```
             """, params = {
@@ -186,22 +190,27 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             ContextUtils.PlayerRenderContext context = renderer.playerRenderContext;
             PoseStack poseStack = context.poseStack;
             MultiBufferSource buffer = context.buffer;
-            AbstractClientPlayer player = context.entity;
-            float yRotationOffset = 90.0F - player.yBodyRotO + yRotation;
             int pL = LightTexture.pack(packedLight, packedLight);
+            AbstractClientPlayer player = context.entity;
+            float yRotationOffset = 90.0F - player.yBodyRotO;
             poseStack.pushPose();
+            poseStack.mulPose(Axis.XP.rotationDegrees(0));
             poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset));
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(0));
             poseStack.translate(xOffset, yOffset, zOffset);
+            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation));
+
             Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, pL, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
+
             poseStack.popPose();
         } else {
             AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");
         }
     }
 
-    @Info(value = """
+    /*@Info(value = """
             Renders an item on the body of a player with customizable position and rotation with
             item lighting overlay option and a boolean deciding if the item rotates while crawling.
                 
@@ -254,5 +263,5 @@ public class PlayerRenderer extends SimplePlayerEventJS {
         } else {
             AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");
         }
-    }
+    }*/
 }
