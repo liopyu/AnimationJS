@@ -25,6 +25,7 @@ import static net.liopyu.animationjs.AnimationJS.MODID;
 
 @Mod.EventBusSubscriber(modid = AnimationJS.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandlers {
+
     public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
 
     @SubscribeEvent
@@ -38,7 +39,9 @@ public class ClientEventHandlers {
             AnimationStateUpdatePacket packet = new AnimationStateUpdatePacket(clientPlayer.getUUID(), isAnimationActive);
             NetworkHandler.sendToServer(packet);
         }
+
     }
+
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
