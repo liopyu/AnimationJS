@@ -48,17 +48,6 @@ public class ClientEventHandlers {
 
     }
 
-    @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        /*if (event.getEntity() == null) return;
-        UUID playerUUID = event.getEntity().getUUID();
-        PlayerRenderer renderer = thisRenderList.get(playerUUID);
-        if (renderer == null) {
-            AbstractClientPlayer player = AnimationJSHelperClass.getClientPlayerByUUID(playerUUID);
-            renderer = new PlayerRenderer(player);
-            thisRenderList.put(playerUUID, renderer);
-        }*/
-    }
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {

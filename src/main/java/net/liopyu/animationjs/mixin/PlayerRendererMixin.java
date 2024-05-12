@@ -3,6 +3,9 @@ package net.liopyu.animationjs.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
+import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import net.liopyu.animationjs.events.EventHandlers;
@@ -44,12 +47,10 @@ public abstract class PlayerRendererMixin implements IPlayerRenderer {
         if (EventHandlers.playerRenderer.hasListeners()) {
             renderer.playerRenderContext = new ContextUtils.PlayerRenderContext(animatorJS$getRenderer(), pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
             renderer.eventCancelled = false;
-            EventHandlers.playerRenderer.post(renderer);
+            EventHandlers.playerRenderer.post(/*ScriptTypeHolder<ScriptTypePredicate.STARTUP_OR_CLIENT>, */renderer);
         }
         if (renderer.eventCancelled) {
             ci.cancel();
         }
     }
-
-
 }

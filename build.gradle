@@ -145,8 +145,10 @@ repositories {
 dependencies {
     runtimeOnly fg.deobf("curse.maven:probejs-585406:5227399")
     //Optional Dependencies
-    /*implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
-    implementation fg.deobf("curse.maven:bendy-lib-623373:4550371")
+    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:5293763")
+    implementation fg.deobf("curse.maven:caelus-308989:5281700")
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.2')
+    /*implementation fg.deobf("curse.maven:bendy-lib-623373:4550371")
     implementation fg.deobf("curse.maven:emotecraft-forge-403422:4632460")*/
     compileOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api"))
     runtimeOnly(fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}"))

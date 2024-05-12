@@ -14,22 +14,37 @@ import net.liopyu.animationjs.utils.ContextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Unique;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
 public class PlayerRenderer extends SimplePlayerEventJS {
+    private static final Map<EntityType<?>, Vec3> entityTranslations;
+
+    static {
+        entityTranslations = new HashMap<>();
+        //entityTranslations.put(EntityType.ENDERMAN, new Vec3(0, -0.8, 0));
+    }
+
     public transient ContextUtils.PlayerRenderContext playerRenderContext;
     public transient boolean eventCancelled;
 
@@ -37,7 +52,6 @@ public class PlayerRenderer extends SimplePlayerEventJS {
         super(player);
         eventCancelled = false;
     }
-
 
     @Override
     public Player getEntity() {
@@ -76,7 +90,7 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             """)
     public void render(Consumer<ContextUtils.PlayerRenderContext> c) {
         if (playerRenderContext == null) {
-            ConsoleJS.CLIENT.info("Renderer is null");
+            AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Render context is null. If you see this message something is wrong, please notify the mod author.");
             return;
         }
         try {
@@ -92,15 +106,11 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             Example Usage:
             ```javascript
             AnimationJS.playerRenderer(event => {
-            	event.render(context => {
-            		const { renderer, entity, entityYaw, partialTicks, poseStack, buffer, packedLight } = context
-            		renderer.renderBodyItem("minecraft:diamond_axe", context, 0, 1, 0.25, 180, -90, 0)
-            	})
+            	event.renderBodyItem("minecraft:diamond_axe", 0, 1, 0.25, 180, -90, 0)
             })
             ```
             """, params = {
             @Param(name = "itemStack", value = "Object: The item stack to render (String (item ID), ResourceLocation, or ItemStack)"),
-            @Param(name = "context", value = "ContextUtils.PlayerRenderContext: The rendering context"),
             @Param(name = "xOffset", value = "Float: The offset along the X-axis"),
             @Param(name = "yOffset", value = "Float: The offset along the Y-axis"),
             @Param(name = "zOffset", value = "Float: The offset along the Z-axis"),
@@ -115,24 +125,25 @@ public class PlayerRenderer extends SimplePlayerEventJS {
         Object obj = AnimationJSHelperClass.convertObjectToDesired(itemStack, "itemstack");
         net.liopyu.animationjs.events.PlayerRenderer renderer = ClientEventHandlers.thisRenderList.get(this.getPlayer().getUUID());
         if (renderer == null) {
+            AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Renderer is null. If you see this message something is wrong, please notify the mod author.");
             return;
         }
         if (obj != null) {
             ContextUtils.PlayerRenderContext context = renderer.playerRenderContext;
-            var playerRenderer = context.renderer;
             PoseStack poseStack = context.poseStack;
             MultiBufferSource buffer = context.buffer;
             int packedLight = context.packedLight;
             AbstractClientPlayer player = context.entity;
-            float yRotationOffset = 90.0F - player.yBodyRotO + yRotation;
-            float boxyRotx = playerRenderer.getModel().body.xRot;
-            float boxyRoty = playerRenderer.getModel().body.yRot;
-            float boxyRotz = playerRenderer.getModel().body.zRot;
+            float yRotationOffset = 90.0F - player.yBodyRotO;
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset - boxyRoty));
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation - boxyRotx));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation - boxyRotz));
-            poseStack.translate(xOffset, -yOffset, zOffset);
+            poseStack.mulPose(Axis.XP.rotationDegrees(0));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(0));
+            poseStack.translate(xOffset, yOffset, zOffset);
+            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation));
+
             Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
 
             poseStack.popPose();
@@ -148,15 +159,11 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             Example Usage:
             ```javascript
             AnimationJS.playerRenderer(event => {
-            	event.render(context => {
-            		const { renderer, entity, entityYaw, partialTicks, poseStack, buffer, packedLight } = context
-            		renderer.renderBodyItem("minecraft:diamond_axe", context, 0, 1, 0.25, 180, -90, 0, 15)
-            	})
+            	event.renderBodyItem("minecraft:diamond_axe", 0, 1, 0.25, 180, -90, 0, 15)
             })
             ```
             """, params = {
             @Param(name = "itemStack", value = "Object: The item stack to render (String (item ID), ResourceLocation, or ItemStack)"),
-            @Param(name = "context", value = "ContextUtils.PlayerRenderContext: The rendering context"),
             @Param(name = "xOffset", value = "Float: The offset along the X-axis"),
             @Param(name = "yOffset", value = "Float: The offset along the Y-axis"),
             @Param(name = "zOffset", value = "Float: The offset along the Z-axis"),
@@ -177,23 +184,72 @@ public class PlayerRenderer extends SimplePlayerEventJS {
         }
         if (obj != null) {
             ContextUtils.PlayerRenderContext context = renderer.playerRenderContext;
-            var playerRenderer = context.renderer;
             PoseStack poseStack = context.poseStack;
             MultiBufferSource buffer = context.buffer;
             AbstractClientPlayer player = context.entity;
             float yRotationOffset = 90.0F - player.yBodyRotO + yRotation;
-            float boxyRotx = playerRenderer.getModel().body.xRot;
-            float boxyRoty = playerRenderer.getModel().body.yRot;
-            float boxyRotz = playerRenderer.getModel().body.zRot;
-
             int pL = LightTexture.pack(packedLight, packedLight);
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset - boxyRoty));
-            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation - boxyRotx));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation - boxyRotz));
-            poseStack.translate(xOffset, -yOffset, zOffset);
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset));
+            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation));
+            poseStack.translate(xOffset, yOffset, zOffset);
             Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, pL, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
+            poseStack.popPose();
+        } else {
+            AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");
+        }
+    }
 
+    @Info(value = """
+            Renders an item on the body of a player with customizable position and rotation with
+            item lighting overlay option and a boolean deciding if the item rotates while crawling.
+                
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+            	event.renderBodyItem("minecraft:diamond_axe", 0.25, 0.7, 0, 0, 0, 90, 15, true)
+            })
+            ```
+            """, params = {
+            @Param(name = "itemStack", value = "Object: The item stack to render (String (item ID), ResourceLocation, or ItemStack)"),
+            @Param(name = "xOffset", value = "Float: The offset along the X-axis"),
+            @Param(name = "yOffset", value = "Float: The offset along the Y-axis"),
+            @Param(name = "zOffset", value = "Float: The offset along the Z-axis"),
+            @Param(name = "xRotation", value = "Float: The rotation around the X-axis (in degrees)"),
+            @Param(name = "yRotation", value = "Float: The rotation around the Y-axis (in degrees)"),
+            @Param(name = "zRotation", value = "Float: The rotation around the Z-axis (in degrees)"),
+            @Param(name = "packedLight", value = "int: The light level of the item's model"),
+            @Param(name = "rotatesWhenCrawling", value = "Boolean: Whether the item rotate when the player is crawling")
+    })
+    @Unique
+    public void renderBodyItem(Object itemStack, float xOffset, float yOffset, float zOffset, float xRotation, float yRotation, float zRotation, int packedLight, boolean rotatesWhenCrawling) {
+        if (Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen ||
+                Minecraft.getInstance().screen instanceof InventoryScreen) return;
+        Object obj = AnimationJSHelperClass.convertObjectToDesired(itemStack, "itemstack");
+        net.liopyu.animationjs.events.PlayerRenderer renderer = ClientEventHandlers.thisRenderList.get(this.getPlayer().getUUID());
+        if (renderer == null) {
+            AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Renderer is null. If you see this message something is wrong, please notify the mod author.");
+            return;
+        }
+        if (obj != null) {
+            ContextUtils.PlayerRenderContext context = renderer.playerRenderContext;
+            PoseStack poseStack = context.poseStack;
+            MultiBufferSource buffer = context.buffer;
+            AbstractClientPlayer player = context.entity;
+            int pL = LightTexture.pack(packedLight, packedLight);
+            float yRotationOffset = 90.0F - player.yBodyRotO;
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.XP.rotationDegrees(0));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotationOffset));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(0));
+
+            poseStack.mulPose(Axis.XP.rotationDegrees(xRotation));
+            poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(zRotation));
+            poseStack.translate(xOffset, yOffset, zOffset);
+
+            Minecraft.getInstance().getItemRenderer().renderStatic((ItemStack) obj, ItemDisplayContext.NONE, pL, OverlayTexture.NO_OVERLAY, poseStack, buffer, player.level(), 0);
             poseStack.popPose();
         } else {
             AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Error in player renderer for method: renderBodyItem. ItemStack is either null or invalid");

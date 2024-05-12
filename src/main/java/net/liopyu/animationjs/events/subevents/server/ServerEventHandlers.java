@@ -21,19 +21,6 @@ public class ServerEventHandlers {
 
 
     @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        /*if (event.getEntity() == null) return;
-        UUID playerUUID = event.getEntity().getUUID();
-        UniversalController controller = thisList.get(playerUUID);
-        if (controller == null) {
-            ServerPlayer player = AnimationJSHelperClass.getServerPlayerByUUID(playerUUID);
-            controller = new UniversalController(player);
-            thisList.put(playerUUID, controller);
-        }*/
-    }
-
-
-    @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.player instanceof ServerPlayer serverPlayer && EventHandlers.universalController.hasListeners()) {
             UniversalController cont = ServerEventHandlers.thisList.get(serverPlayer.getUUID());
