@@ -1,26 +1,17 @@
 package net.liopyu.animationjs.mixin;
 
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
-import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
-import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.typings.Param;
 import net.liopyu.animationjs.events.EventHandlers;
 import net.liopyu.animationjs.events.subevents.IPlayerRenderer;
 import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
-import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.liopyu.animationjs.utils.ContextUtils;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,6 +40,7 @@ public abstract class PlayerRendererMixin implements IPlayerRenderer {
             renderer.eventCancelled = false;
             EventHandlers.playerRenderer.post(/*ScriptTypeHolder<ScriptTypePredicate.STARTUP_OR_CLIENT>, */renderer);
         }
+
         if (renderer.eventCancelled) {
             ci.cancel();
         }

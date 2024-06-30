@@ -1,6 +1,7 @@
 package net.liopyu.animationjs.events;
 
 
+import com.google.common.collect.ImmutableList;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
@@ -16,10 +17,12 @@ import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
 import net.liopyu.animationjs.events.subevents.server.ServerEventHandlers;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
 import java.util.UUID;

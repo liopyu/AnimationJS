@@ -1,5 +1,6 @@
 package net.liopyu.animationjs.events;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.architectury.event.events.client.ClientTickEvent;
@@ -15,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -57,6 +59,126 @@ public class PlayerRenderer extends SimplePlayerEventJS {
     public @Nullable Player getPlayer() {
         return playerRenderContext.entity;
     }
+
+    @Info(value = """
+            Retrieves a list of model parts.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let parts = event.getModelParts();
+            })
+            ```
+            """)
+    public Iterable<ModelPart> getModelParts() {
+        return ImmutableList.of(
+                playerRenderContext.renderer.getModel().body,
+                playerRenderContext.renderer.getModel().rightArm,
+                playerRenderContext.renderer.getModel().leftArm,
+                playerRenderContext.renderer.getModel().rightLeg,
+                playerRenderContext.renderer.getModel().leftLeg,
+                playerRenderContext.renderer.getModel().hat
+        );
+    }
+
+    @Info(value = """
+            Retrieves the body model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let body = event.getBody();
+            })
+            ```
+            """)
+    public ModelPart getBody() {
+        return playerRenderContext.renderer.getModel().body;
+    }
+
+    @Info(value = """
+            Retrieves the head model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let head = event.getHead();
+            })
+            ```
+            """)
+    public ModelPart getHead() {
+        return playerRenderContext.renderer.getModel().head;
+    }
+
+    @Info(value = """
+            Retrieves the right arm model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let rightArm = event.getRightArm();
+            })
+            ```
+            """)
+    public ModelPart getRightArm() {
+        return playerRenderContext.renderer.getModel().rightArm;
+    }
+
+    @Info(value = """
+            Retrieves the left arm model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let leftArm = event.getLeftArm();
+            })
+            ```
+            """)
+    public ModelPart getLeftArm() {
+        return playerRenderContext.renderer.getModel().leftArm;
+    }
+
+    @Info(value = """
+            Retrieves the right leg model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let rightLeg = event.getRightLeg();
+            })
+            ```
+            """)
+    public ModelPart getRightLeg() {
+        return playerRenderContext.renderer.getModel().rightLeg;
+    }
+
+    @Info(value = """
+            Retrieves the left leg model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let leftLeg = event.getLeftLeg();
+            })
+            ```
+            """)
+    public ModelPart getLeftLeg() {
+        return playerRenderContext.renderer.getModel().leftLeg;
+    }
+
+    @Info(value = """
+            Retrieves the hat model part.
+
+            Example Usage:
+            ```javascript
+            AnimationJS.playerRenderer(event => {
+                let hat = event.getHat();
+            })
+            ```
+            """)
+    public ModelPart getHat() {
+        return playerRenderContext.renderer.getModel().hat;
+    }
+
 
     @Info(value = """
             Renders an item on the body of a player with customizable position and rotation.
