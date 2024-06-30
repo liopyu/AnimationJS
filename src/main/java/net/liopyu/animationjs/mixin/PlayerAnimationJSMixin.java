@@ -34,10 +34,6 @@ import java.util.function.Consumer;
 @Mixin(Player.class)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
-    private static final double POSITION_THRESHOLD = 0.001;
-    @Unique
-    private static final int COOLDOWN_TICKS = 1;
-    @Unique
     private static final Logger animatorJS$logger = LogManager.getLogger(ModInit.class);
     @Unique
     private transient Object animatorJS$player = this;
@@ -64,53 +60,46 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
         return animatorJS$isMoving;
     }
 
-    @Unique
-    private void animatorJS$movingBoolean() {
-        Player player = (Player) animatorJS$player;
-        if (player != null) {
-            double currentX = player.getX();
-            double currentY = player.getY();
-            double currentZ = player.getZ();
-
-            double deltaX = Math.abs(animatorJS$prevX - currentX);
-            double deltaY = Math.abs(animatorJS$prevY - currentY);
-            double deltaZ = Math.abs(animatorJS$prevZ - currentZ);
-
-            boolean movingX = deltaX > POSITION_THRESHOLD;
-            boolean movingY = deltaY > POSITION_THRESHOLD;
-            boolean movingZ = deltaZ > POSITION_THRESHOLD;
-
-            animatorJS$prevX = currentX;
-            animatorJS$prevY = currentY;
-            animatorJS$prevZ = currentZ;
-
-            if (movingX || movingY || movingZ) {
-                animatorJS$cooldown = COOLDOWN_TICKS;
-                animatorJS$isMoving = true;
-                return;
-            } else {
-                if (animatorJS$cooldown > 0) {
-                    animatorJS$cooldown--;
-                    animatorJS$isMoving = true;
-                    return;
-                } else {
-                    animatorJS$isMoving = false;
-                    return;
-                }
-            }
-        }
-        animatorJS$isMoving = false;
-    }
-
-    @Inject(method = "tick", at = @At(value = "TAIL"))
-    private void animationJS$tick(CallbackInfo ci) {
-        animatorJS$movingBoolean();
+    public void animatorJS$setIsMoving(boolean b) {
+        animatorJS$isMoving = b;
     }
 
     @Unique
     @Info("Determines if a playerAnimator animation is currently playing")
     public boolean animatorJS$isAnimActive() {
         return AnimationStateTracker.getAnimationState(animatorJS$objectPlayer.getUUID());
+    }
+
+    public double animatorJS$getPrevX() {
+        return animatorJS$prevX;
+    }
+
+    public double animatorJS$getPrevY() {
+        return animatorJS$prevY;
+    }
+
+    public double animatorJS$getPrevZ() {
+        return animatorJS$prevZ;
+    }
+
+    public void animatorJS$setPrevX(double d) {
+        animatorJS$prevX = d;
+    }
+
+    public void animatorJS$setPrevY(double d) {
+        animatorJS$prevY = d;
+    }
+
+    public void animatorJS$setPrevZ(double d) {
+        animatorJS$prevZ = d;
+    }
+
+    public int animatorJS$getCooldown() {
+        return animatorJS$cooldown;
+    }
+
+    public void animatorJS$setCooldown(int i) {
+        animatorJS$cooldown = i;
     }
 
     @Unique

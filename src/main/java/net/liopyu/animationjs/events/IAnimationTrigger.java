@@ -23,4 +23,24 @@ public interface IAnimationTrigger {
 
     @RemapForJS("isPlayingAnimation")
     boolean animatorJS$isAnimActive();
+
+    void animatorJS$updateMovementBoolean();
+
+    double animatorJS$getPrevX();
+
+    double animatorJS$getPrevY();
+
+    double animatorJS$getPrevZ();
+
+    void animatorJS$setPrevX(double d);
+
+    void animatorJS$setPrevY(double d);
+
+    void animatorJS$setPrevZ(double d);
+
+    int animatorJS$getCooldown();
+
+    void animatorJS$setCooldown(int i);
+
+    void animatorJS$setIsMoving(boolean b);
 }

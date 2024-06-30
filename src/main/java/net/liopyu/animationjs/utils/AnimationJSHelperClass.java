@@ -101,7 +101,7 @@ public class AnimationJSHelperClass {
         }
     }
 
-    private static Integer convertToInteger(Object input) {
+    public static Integer convertToInteger(Object input) {
         if (input instanceof Integer) {
             return (Integer) input;
         } else if (input instanceof Double || input instanceof Float) {
@@ -111,7 +111,7 @@ public class AnimationJSHelperClass {
         }
     }
 
-    private static Double convertToDouble(Object input) {
+    public static Double convertToDouble(Object input) {
         if (input instanceof Double) {
             return (Double) input;
         } else if (input instanceof Integer || input instanceof Float) {
@@ -121,7 +121,7 @@ public class AnimationJSHelperClass {
         }
     }
 
-    private static Float convertToFloat(Object input) {
+    public static Float convertToFloat(Object input) {
         if (input instanceof Float) {
             return (Float) input;
         } else if (input instanceof Integer || input instanceof Double) {
@@ -191,7 +191,7 @@ public class AnimationJSHelperClass {
         return null;
     }
 
-    private static ResourceLocation convertToResourceLocation(Object input) {
+    public static ResourceLocation convertToResourceLocation(Object input) {
         if (input instanceof ResourceLocation) {
             return (ResourceLocation) input;
         } else if (input instanceof String) {
