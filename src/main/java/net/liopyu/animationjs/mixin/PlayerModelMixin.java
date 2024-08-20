@@ -20,7 +20,6 @@ public abstract class PlayerModelMixin<T extends LivingEntity> {
         if (entity instanceof Player player) {
             PlayerModel<T> animatorJS$playerModel = (PlayerModel<T>) (Object) this;
             var context = new ContextUtils.PlayerSetupAnimContext<>(animatorJS$playerModel, entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            ClientEventHandlers.thisModelList.get(entity.getUUID());
             PlayerModelEvent modelEvent = new PlayerModelEvent(player, context);
             if (EventHandlers.playerModel.hasListeners()) {
                 EventHandlers.playerModel.post(modelEvent);

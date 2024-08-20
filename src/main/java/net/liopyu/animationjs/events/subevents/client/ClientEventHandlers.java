@@ -45,7 +45,6 @@ import static net.liopyu.animationjs.AnimationJS.MODID;
 public class ClientEventHandlers {
 
     public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
-    public static final Map<UUID, PlayerModelEvent> thisModelList = new HashMap<>();
     private static final ResourceLocation VISION_OVERLAY_TEXTURE = new ResourceLocation("minecraft:textures/misc/pumpkinblur.png");
 
 
