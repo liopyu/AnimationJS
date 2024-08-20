@@ -31,9 +31,9 @@ public abstract class PlayerRendererMixin {
             renderer = new net.liopyu.animationjs.events.PlayerRenderer(pEntity);
             ClientEventHandlers.thisRenderList.put(pEntity.getUUID(), renderer);
         }
+        renderer.eventCancelled = false;
         if (EventHandlers.playerRenderer.hasListeners()) {
             renderer.playerRenderContext = new ContextUtils.PlayerRenderContext(animatorJS$getRenderer(), pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
-            renderer.eventCancelled = false;
             EventHandlers.playerRenderer.post(/*ScriptTypeHolder<ScriptTypePredicate.STARTUP_OR_CLIENT>, */renderer);
         }
         if (renderer.eventCancelled) {
