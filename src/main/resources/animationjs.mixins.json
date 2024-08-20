@@ -9,9 +9,11 @@
     "ServerReloadMixin"
   ],
   "client": [
+    "PlayerModelMixin",
     "PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "animationjs.refmap.json"
 }

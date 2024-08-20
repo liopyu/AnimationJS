@@ -1,4 +1,4 @@
-package net.liopyu.animationjs.events.subevents;
+package net.liopyu.animationjs.events;
 
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 

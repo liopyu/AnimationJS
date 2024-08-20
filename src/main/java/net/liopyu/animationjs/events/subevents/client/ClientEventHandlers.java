@@ -11,6 +11,7 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import lio.playeranimatorapi.events.ClientPlayerTickEvent;
 import net.liopyu.animationjs.AnimationJS;
+import net.liopyu.animationjs.events.PlayerModelEvent;
 import net.liopyu.animationjs.events.PlayerRenderer;
 import net.liopyu.animationjs.network.NetworkHandler;
 import net.liopyu.animationjs.network.packet.AnimationStateUpdatePacket;
@@ -44,6 +45,7 @@ import static net.liopyu.animationjs.AnimationJS.MODID;
 public class ClientEventHandlers {
 
     public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
+    public static final Map<UUID, PlayerModelEvent> thisModelList = new HashMap<>();
     private static final ResourceLocation VISION_OVERLAY_TEXTURE = new ResourceLocation("minecraft:textures/misc/pumpkinblur.png");
 
 
