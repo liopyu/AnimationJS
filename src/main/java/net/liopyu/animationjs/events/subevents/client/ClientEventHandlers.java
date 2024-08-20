@@ -6,6 +6,7 @@ import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.liopyu.animationjs.AnimationJS;
+import net.liopyu.animationjs.events.PlayerModelEvent;
 import net.liopyu.animationjs.events.PlayerRenderer;
 import net.liopyu.animationjs.network.NetworkHandler;
 import net.liopyu.animationjs.network.packet.AnimationStateUpdatePacket;
@@ -27,6 +28,8 @@ import static net.liopyu.animationjs.AnimationJS.MODID;
 public class ClientEventHandlers {
 
     public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
+
+    public static final Map<UUID, PlayerModelEvent> thisModelList = new HashMap<>();
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.PlayerTickEvent event) {

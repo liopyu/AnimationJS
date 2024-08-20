@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.event.EventHandler;
 public class EventHandlers {
     public static final EventGroup AnimationJS = EventGroup.of("AnimationJS");
     public static final EventHandler universalController = AnimationJS.server("universalController", () -> UniversalController.class);
-    public static final EventHandler playerRenderer = AnimationJS.client("playerRenderer", () -> PlayerRenderer.class);
-    //public static final EventHandler playerRendererclient = AnimationJS.client("playerRenderer", () -> PlayerRenderer.class);
-
+    public static final EventHandler playerRenderer = AnimationJS.client("playerRenderer", () -> PlayerRenderer.class).hasResult();
+    public static final EventHandler playerModel = AnimationJS.client("playerModel", () -> PlayerModelEvent.class);
 }

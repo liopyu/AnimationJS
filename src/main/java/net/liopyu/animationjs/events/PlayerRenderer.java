@@ -60,117 +60,6 @@ public class PlayerRenderer extends SimplePlayerEventJS {
     }
 
     @Info(value = """
-            Retrieves a list of model parts.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let parts = event.getModelParts();
-            })
-            ```
-            """)
-    public Iterable<ModelPart> getModelParts() {
-        return ImmutableList.of(
-                playerRenderContext.renderer.getModel().body,
-                playerRenderContext.renderer.getModel().rightArm,
-                playerRenderContext.renderer.getModel().leftArm,
-                playerRenderContext.renderer.getModel().rightLeg,
-                playerRenderContext.renderer.getModel().leftLeg,
-                playerRenderContext.renderer.getModel().hat
-        );
-    }
-
-    @Info(value = """
-            Retrieves the body model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let body = event.getBody();
-            })
-            ```
-            """)
-    public ModelPart getBody() {
-        return playerRenderContext.renderer.getModel().body;
-    }
-
-    @Info(value = """
-            Retrieves the head model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let head = event.getHead();
-            })
-            ```
-            """)
-    public ModelPart getHead() {
-        return playerRenderContext.renderer.getModel().head;
-    }
-
-    @Info(value = """
-            Retrieves the right arm model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let rightArm = event.getRightArm();
-            })
-            ```
-            """)
-    public ModelPart getRightArm() {
-        return playerRenderContext.renderer.getModel().rightArm;
-    }
-
-    @Info(value = """
-            Retrieves the left arm model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let leftArm = event.getLeftArm();
-            })
-            ```
-            """)
-    public ModelPart getLeftArm() {
-        return playerRenderContext.renderer.getModel().leftArm;
-    }
-
-    @Info(value = """
-            Retrieves the right leg model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let rightLeg = event.getRightLeg();
-            })
-            ```
-            """)
-    public ModelPart getRightLeg() {
-        return playerRenderContext.renderer.getModel().rightLeg;
-    }
-
-    @Info(value = """
-            Retrieves the left leg model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let leftLeg = event.getLeftLeg();
-            })
-            ```
-            """)
-    public ModelPart getLeftLeg() {
-        return playerRenderContext.renderer.getModel().leftLeg;
-    }
-
-    @Info(value = """
-            Retrieves the hat model part.
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let hat = event.getHat();
-            })
-            ```
-            """)
-    public ModelPart getHat() {
-        return playerRenderContext.renderer.getModel().hat;
-    }
-
-    @Info(value = """
             Renders an item on the body of a player with customizable position and rotation.
                 
             Example Usage:
@@ -189,8 +78,10 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             Used to cancel the default player renderer. Doing this will halt the default minecraft
             renderer method but will not disable AnimationJS' animation render logic
             """)
-    public void cancelDefaultRender() {
+    @Override
+    public Object cancel() throws EventExit {
         eventCancelled = true;
+        return super.cancel();
     }
 
     @Info(value = """
