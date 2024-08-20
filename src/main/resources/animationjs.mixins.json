@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "net.liopyu.animationjs.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "animationjs.refmap.json",
   "mixins": [
     "ClientReloadMixin",
     "PlayerAnimationJSMixin",
@@ -14,6 +15,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "refmap": "animationjs.refmap.json"
+  }
 }
