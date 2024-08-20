@@ -23,11 +23,7 @@ public abstract class PlayerModelMixin<T extends LivingEntity> {
         if (entity instanceof Player player) {
             PlayerModel<T> animatorJS$playerModel = (PlayerModel<T>) (Object) this;
             var context = new ContextUtils.PlayerSetupAnimContext<>(animatorJS$playerModel, entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            PlayerModelEvent modelEvent = ClientEventHandlers.thisModelList.get(entity.getUUID());
-            if (modelEvent == null) {
-                modelEvent = new net.liopyu.animationjs.events.PlayerModelEvent(player, context);
-                ClientEventHandlers.thisModelList.put(entity.getUUID(), modelEvent);
-            }
+            PlayerModelEvent modelEvent = new net.liopyu.animationjs.events.PlayerModelEvent(player, context);
             if (EventHandlers.playerModel.hasListeners()) {
                 EventHandlers.playerModel.post(modelEvent);
             }

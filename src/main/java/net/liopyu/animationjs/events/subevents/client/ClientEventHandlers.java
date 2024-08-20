@@ -29,8 +29,6 @@ public class ClientEventHandlers {
 
     public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
 
-    public static final Map<UUID, PlayerModelEvent> thisModelList = new HashMap<>();
-
     @SubscribeEvent
     public static void onClientTick(TickEvent.PlayerTickEvent event) {
         if (event.player instanceof AbstractClientPlayer clientPlayer) {
