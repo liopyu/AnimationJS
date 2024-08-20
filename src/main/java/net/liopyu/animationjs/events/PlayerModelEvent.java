@@ -1,51 +1,120 @@
 package net.liopyu.animationjs.events;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import dev.latvian.mods.kubejs.event.EventExit;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.typings.Param;
-import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
-import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.liopyu.animationjs.utils.ContextUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.Cancelable;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Unique;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
+@Info(value = """
+        Initializes a new PlayerModelEvent with the given player and animation context. This event provides access to the player model and various animation parameters during the setup animation phase.
+        Example Usage:
+        ```javascript
+        AnimationJS.playerModel(event => {
+            const { playerModel, entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch } = event;
+            // Use the playerModel and animation parameters as needed
+        });
+        ```
+        Parameters:
+        - player: The player entity associated with this event.
+        - playerModelContext: The context containing the player model and animation parameters.
+        """)
 @OnlyIn(Dist.CLIENT)
 public class PlayerModelEvent extends SimplePlayerEventJS {
+    protected final ContextUtils.PlayerSetupAnimContext<?> playerModelContext;
+    public PlayerModel<?> playerModel;
+    public float limbSwing;
+    public float limbSwingAmount;
+    public float ageInTicks;
+    public float netHeadYaw;
+    public float headPitch;
 
-    public static ModelPart head;
-    public static ModelPart hat;
-    public static ModelPart body;
-    public static ModelPart rightArm;
-    public static ModelPart leftArm;
-    public static ModelPart rightLeg;
-    public static ModelPart leftLeg;
-    public static List<ModelPart> modelParts = new ArrayList<>();
-    public transient ContextUtils.PlayerSetupAnimContext<?> playerModelContext;
-
-    public PlayerModelEvent(Player player) {
+    public PlayerModelEvent(Player player, ContextUtils.PlayerSetupAnimContext<?> playerModelContext) {
         super(player);
+        this.playerModelContext = playerModelContext;
+        this.playerModel = playerModelContext.playerModel;
+        this.limbSwing = playerModelContext.limbSwing;
+        this.limbSwingAmount = playerModelContext.limbSwingAmount;
+        this.ageInTicks = playerModelContext.ageInTicks;
+        this.netHeadYaw = playerModelContext.netHeadYaw;
+        this.headPitch = playerModelContext.headPitch;
     }
+
+    @Info(value = """
+            Retrieves the player model associated with the current animation context.
+                        
+            Example Usage:
+            ```javascript
+            const playerModel = event.getPlayerModel();
+            ```
+            """)
+    public PlayerModel<?> getPlayerModel() {
+        return playerModel;
+    }
+
+    @Info(value = """
+            Retrieves the age of the entity in ticks, used for animations that depend on the entity's lifetime.
+                        
+            Example Usage:
+            ```javascript
+            const ageInTicks = event.getAgeInTicks();
+            ```
+            """)
+    public float getAgeInTicks() {
+        return ageInTicks;
+    }
+
+    @Info(value = """
+            Retrieves the pitch of the entity's head, used for controlling vertical head movement in animations.
+                        
+            Example Usage:
+            ```javascript
+            const headPitch = event.getHeadPitch();
+            ```
+            """)
+    public float getHeadPitch() {
+        return headPitch;
+    }
+
+    @Info(value = """
+            Retrieves the limb swing value, which represents the movement of the entity's limbs (e.g., legs) during walking animations.
+                        
+            Example Usage:
+            ```javascript
+            const limbSwing = event.getLimbSwing();
+            ```
+            """)
+    public float getLimbSwing() {
+        return limbSwing;
+    }
+
+    @Info(value = """
+            Retrieves the limb swing amount, which represents the intensity or magnitude of the limb swing during animations.
+                        
+            Example Usage:
+            ```javascript
+            const limbSwingAmount = event.getLimbSwingAmount();
+            ```
+            """)
+    public float getLimbSwingAmount() {
+        return limbSwingAmount;
+    }
+
+    @Info(value = """
+            Retrieves the yaw of the entity's head, used for controlling horizontal head movement in animations.
+                        
+            Example Usage:
+            ```javascript
+            const netHeadYaw = event.getNetHeadYaw();
+            ```
+            """)
+    public float getNetHeadYaw() {
+        return netHeadYaw;
+    }
+
 
     @Override
     public Player getEntity() {
@@ -56,134 +125,4 @@ public class PlayerModelEvent extends SimplePlayerEventJS {
     public @Nullable Player getPlayer() {
         return (Player) playerModelContext.entity;
     }
-
-    @Info(value = """
-            Retrieves a list of model parts.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let parts = event.getModelParts();
-            })
-            ```
-            """)
-    public Iterable<ModelPart> getModelParts() {
-        return modelParts;
-    }
-
-
-    @Info(value = """
-            Retrieves the body model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let body = event.getBody();
-            })
-            ```
-            """)
-    public ModelPart getBody() {
-        return body;
-    }
-
-    @Info(value = """
-            Retrieves the head model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let head = event.getHead();
-            })
-            ```
-            """)
-    public ModelPart getHead() {
-        return head;
-    }
-
-    @Info(value = """
-            Retrieves the right arm model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let rightArm = event.getRightArm();
-            })
-            ```
-            """)
-    public ModelPart getRightArm() {
-        return rightArm;
-    }
-
-    @Info(value = """
-            Retrieves the left arm model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let leftArm = event.getLeftArm();
-            })
-            ```
-            """)
-    public ModelPart getLeftArm() {
-        return leftArm;
-    }
-
-    @Info(value = """
-            Retrieves the right leg model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let rightLeg = event.getRightLeg();
-            })
-            ```
-            """)
-    public ModelPart getRightLeg() {
-        return rightLeg;
-    }
-
-    @Info(value = """
-            Retrieves the left leg model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let leftLeg = event.getLeftLeg();
-            })
-            ```
-            """)
-    public ModelPart getLeftLeg() {
-        return leftLeg;
-    }
-
-    @Info(value = """
-            Retrieves the hat model part.
-
-            Example Usage:
-            ```javascript
-            AnimationJS.playerRenderer(event => {
-                let hat = event.getHat();
-            })
-            ```
-            """)
-    public ModelPart getHat() {
-        return hat;
-    }
-
-
-    @Info(value = """
-            Provides access to the player's model and animation parameters during the setup animation phase.
-                        
-            Example Usage:
-            ```javascript
-            AnimationJS.playerModel(event => {
-            	const { playerModel, entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch } = event.modelContext;
-            })
-            ```
-            """)
-    public ContextUtils.PlayerSetupAnimContext<?> getModelContext() {
-        return playerModelContext;
-    }
-
-
 }
