@@ -30,3 +30,5 @@ mandatory = true
 versionRange = "[2100.7.0-build.83,)"
 ordering = "NONE"
 side = "BOTH"
+[[mixins]]
+config = "animationjs.mixins.json"
