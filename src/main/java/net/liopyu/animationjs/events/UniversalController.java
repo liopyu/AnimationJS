@@ -1,37 +1,9 @@
 package net.liopyu.animationjs.events;
 
 
-import com.google.common.collect.ImmutableList;
-import dev.kosmx.playerAnim.api.layered.IAnimation;
-import dev.kosmx.playerAnim.api.layered.ModifierLayer;
-import dev.kosmx.playerAnim.core.util.Ease;
-import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
-import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
-import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.typings.Param;
-import lio.playeranimatorapi.API.PlayerAnimAPI;
-import lio.playeranimatorapi.data.PlayerAnimationData;
-import lio.playeranimatorapi.data.PlayerParts;
-import lio.playeranimatorapi.modifier.CommonModifier;
-import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
-import net.liopyu.animationjs.events.subevents.server.ServerEventHandlers;
-import net.liopyu.animationjs.network.server.AnimationStateTracker;
-import net.liopyu.animationjs.utils.AnimationJSHelperClass;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Unique;
+public class UniversalController /*extends SimplePlayerKubeEvent*/ {
 
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-public class UniversalController extends SimplePlayerEventJS {
-
-
+/*
     private transient ResourceLocation currentLocation;
 
     public UniversalController(Player p) {
@@ -232,6 +204,6 @@ public class UniversalController extends SimplePlayerEventJS {
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
         PlayerAnimAPI.stopPlayerAnim(serverLevel, getServerPlayer(), aN);
-    }
+    }*/
 }
 

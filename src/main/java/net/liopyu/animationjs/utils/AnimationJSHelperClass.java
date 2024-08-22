@@ -1,29 +1,32 @@
 package net.liopyu.animationjs.utils;
 
-import dev.kosmx.playerAnim.api.layered.IAnimation;
+/*import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
-import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
-import lio.playeranimatorapi.API.PlayerAnimAPIClient;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;*/
+/*import lio.playeranimatorapi.API.PlayerAnimAPIClient;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
-import lio.playeranimatorapi.modifier.CommonModifier;
+import lio.playeranimatorapi.modifier.CommonModifier;*/
+
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 public class AnimationJSHelperClass {
     public static final Set<String> clientErrorMessagesLogged = new HashSet<>();
@@ -76,8 +79,8 @@ public class AnimationJSHelperClass {
     public static Object convertObjectToDesired(Object input, String outputType) {
         return switch (outputType.toLowerCase()) {
             case "resourcelocation" -> convertToResourceLocation(input);
-            case "ease" -> easeFromString(input);
-            case "modifierlist" -> modifierList(input);
+            /*case "ease" -> easeFromString(input);
+            case "modifierlist" -> modifierList(input);*/
             case "integer" -> convertToInteger(input);
             case "double" -> convertToDouble(input);
             case "float" -> convertToFloat(input);
@@ -89,9 +92,9 @@ public class AnimationJSHelperClass {
 
     public static ItemStack getStack(Object input) {
         if (input instanceof String) {
-            return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(new ResourceLocation((String) input))).getDefaultInstance();
+            return Objects.requireNonNull(BuiltInRegistries.ITEM.get(ResourceLocation.parse((String) input))).getDefaultInstance();
         } else if (input instanceof ResourceLocation) {
-            return Objects.requireNonNull(ForgeRegistries.ITEMS.getValue((ResourceLocation) input)).getDefaultInstance();
+            return Objects.requireNonNull(BuiltInRegistries.ITEM.get((ResourceLocation) input)).getDefaultInstance();
         } else if (input instanceof ItemStack) {
             return (ItemStack) input;
         } else if (input instanceof Item item) {
@@ -132,7 +135,7 @@ public class AnimationJSHelperClass {
     }
 
     // Method to convert a string representation of easing function name to Ease enum
-    public static Ease easeFromString(Object functionName) {
+    /*public static Ease easeFromString(Object functionName) {
         if (functionName instanceof String s) {
             return switch (s.toUpperCase()) {
                 case "LINEAR" -> Ease.LINEAR;
@@ -189,13 +192,13 @@ public class AnimationJSHelperClass {
             return list;
         }
         return null;
-    }
+    }*/
 
     private static ResourceLocation convertToResourceLocation(Object input) {
         if (input instanceof ResourceLocation) {
             return (ResourceLocation) input;
         } else if (input instanceof String) {
-            return new ResourceLocation((String) input);
+            return ResourceLocation.parse((String) input);
         }
         return null;
     }
@@ -230,7 +233,7 @@ public class AnimationJSHelperClass {
         }
         return server.getPlayerList().getPlayer(playerUUID);
     }
-
+/*
     public static ModifierLayer<IAnimation> getanimation(AbstractClientPlayer player) {
         ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player).get(new ResourceLocation("liosplayeranimatorapi", "factory"));
         return anim;
@@ -242,7 +245,7 @@ public class AnimationJSHelperClass {
 
     public static void playClientAnimation(AbstractClientPlayer player, ResourceLocation rl) {
         PlayerAnimAPIClient.playPlayerAnim(player, rl);
-    }
+    }*/
 
     public static boolean isClientPlayer(Object player) {
         return player instanceof AbstractClientPlayer;

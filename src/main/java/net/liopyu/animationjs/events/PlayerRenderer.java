@@ -1,48 +1,34 @@
 package net.liopyu.animationjs.events;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import dev.architectury.event.events.client.ClientTickEvent;
 import dev.latvian.mods.kubejs.event.EventExit;
-import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
+import dev.latvian.mods.kubejs.player.SimplePlayerKubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
 import net.liopyu.animationjs.utils.ContextUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 @OnlyIn(Dist.CLIENT)
-public class PlayerRenderer extends SimplePlayerEventJS {
+public class PlayerRenderer extends SimplePlayerKubeEvent {
     public transient ContextUtils.PlayerRenderContext playerRenderContext;
     public transient boolean eventCancelled;
 
@@ -81,9 +67,19 @@ public class PlayerRenderer extends SimplePlayerEventJS {
             renderer method but will not disable AnimationJS' animation render logic
             """)
     @Override
-    public Object cancel() throws EventExit {
+    public Object cancel(Context cx) throws EventExit {
         eventCancelled = true;
-        return super.cancel();
+        return super.cancel(cx);
+    }
+
+    @Info(value = """
+            Used to cancel the default player renderer. Doing this will halt the default minecraft
+            renderer method but will not disable AnimationJS' animation render logic
+            """)
+    @Override
+    public Object cancel(Context cx, @Nullable Object value) throws EventExit {
+        eventCancelled = true;
+        return super.cancel(cx, value);
     }
 
     @Info(value = """

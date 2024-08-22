@@ -1,17 +1,18 @@
 package net.liopyu.animationjs;
 
-import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import net.liopyu.animationjs.events.EventHandlers;
 
-public class AnimationJSPlugin extends KubeJSPlugin {
+public class AnimationJSPlugin implements KubeJSPlugin {
     public void initStartup() {
-
     }
 
     @Override
-    public void registerEvents() {
-        EventHandlers.AnimationJS.register();
+    public void registerEvents(EventGroupRegistry registry) {
+        registry.register(EventHandlers.AnimationJS);
     }
+
     /*@Override
     public void registerBindings(BindingsEvent event) {
         //event.add("PlayerAnimationTrigger", PlayerAnimationTrigger.class);

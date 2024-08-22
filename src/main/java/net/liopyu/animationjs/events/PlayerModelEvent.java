@@ -1,13 +1,13 @@
 package net.liopyu.animationjs.events;
 
-import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
+
+import dev.latvian.mods.kubejs.player.SimplePlayerKubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.liopyu.animationjs.utils.ContextUtils;
 import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
         - playerModelContext: The context containing the player model and animation parameters.
         """)
 @OnlyIn(Dist.CLIENT)
-public class PlayerModelEvent extends SimplePlayerEventJS {
+public class PlayerModelEvent extends SimplePlayerKubeEvent {
     protected final ContextUtils.PlayerSetupAnimContext<?> playerModelContext;
     public PlayerModel<?> playerModel;
     public float limbSwing;

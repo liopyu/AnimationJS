@@ -1,44 +1,23 @@
 package net.liopyu.animationjs.mixin;
 
-import dev.kosmx.playerAnim.core.util.Ease;
+/*import dev.kosmx.playerAnim.core.util.Ease;*/
+
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.typings.Param;
-import lio.playeranimatorapi.API.PlayerAnimAPI;
-import lio.playeranimatorapi.ModInit;
-import lio.playeranimatorapi.data.PlayerAnimationData;
-import lio.playeranimatorapi.data.PlayerParts;
-import lio.playeranimatorapi.modifier.CommonModifier;
 import net.liopyu.animationjs.events.IAnimationTrigger;
-import net.liopyu.animationjs.network.server.AnimationStateTracker;
-import net.liopyu.animationjs.utils.AnimationJSHelperClass;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-@Mixin(Player.class)
+@Mixin(value = Player.class, remap = true)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
-    @Unique
-    private static final Logger animatorJS$logger = LogManager.getLogger(ModInit.class);
     @Unique
     private transient Object animatorJS$player = this;
     @Unique
     public final Player animatorJS$objectPlayer = (Player) animatorJS$player;
     @Unique
     private int animatorJS$cooldown;
-    @Unique
-    private ResourceLocation animatorJS$currentLocation;
+    /*@Unique
+    private ResourceLocation animatorJS$currentLocation;*/
     @Unique
     private double animatorJS$prevX;
     @Unique
@@ -90,11 +69,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     }
 
 
-    @Unique
-    @Info("Determines if a playerAnimator animation is currently playing")
-    public boolean animatorJS$isAnimActive() {
-        return AnimationStateTracker.getAnimationState(animatorJS$objectPlayer.getUUID());
-    }
+    /*
 
     @Unique
     private boolean animatorJS$canPlay(ResourceLocation aN) {
@@ -115,7 +90,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
             Used to trigger animations off a server player. This can be
             called from any server player object.
-                        
+
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving")
@@ -143,7 +118,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
             Used to trigger animations off a server player. This can be
             called from any server player object with the extra option for animations to overlap themselves.
-                        
+
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving", true)
@@ -174,7 +149,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to trigger animations off the server player with customizable animation data.
-                        
+
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving", 1, "linear", true, false);
@@ -213,7 +188,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to trigger animations off the server player with customizable animation data.
-                        
+
             Example Usage:
             ```javascript
             event.triggerAnimation("animationjs:waving", 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
@@ -269,7 +244,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to stop a certain player animation.
-                        
+
             Example Usage:
             ```javascript
             event.stopAnimation("animationjs:waving")
@@ -290,5 +265,5 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             ResourceLocation aN = (ResourceLocation) animName;
             PlayerAnimAPI.stopPlayerAnim(serverLevel, serverPlayer, aN);
         }
-    }
+    }*/
 }
