@@ -3,7 +3,6 @@ package net.liopyu.animationjs.mixin;
 
 import net.liopyu.animationjs.events.EventHandlers;
 import net.liopyu.animationjs.events.PlayerModelEvent;
-import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
 import net.liopyu.animationjs.utils.ContextUtils;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerModel.class)
+@Mixin(value = PlayerModel.class, remap = true, priority = 2001)
 public abstract class PlayerModelMixin<T extends LivingEntity> {
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At("TAIL"), remap = true)
     private void rotateBodyPart(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
@@ -25,5 +24,6 @@ public abstract class PlayerModelMixin<T extends LivingEntity> {
                 EventHandlers.playerModel.post(modelEvent);
             }
         }
+
     }
 }

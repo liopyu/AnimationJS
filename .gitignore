@@ -116,3 +116,65 @@ run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+/runs/client/.gitignore
+/runs/client/saves/New World/playerdata/380df991-f603-344c-a090-369bad2a924a.dat
+/runs/client/saves/New World/playerdata/380df991-f603-344c-a090-369bad2a924a.dat_old
+/runs/client/saves/New World/advancements/380df991-f603-344c-a090-369bad2a924a.json
+/runs/client/saves/New World/stats/380df991-f603-344c-a090-369bad2a924a.json
+/runs/client/logs/2024-08-22-1.log.gz
+/runs/client/logs/2024-08-22-2.log.gz
+/runs/client/logs/2024-08-22-3.log.gz
+/runs/client/logs/2024-08-22-4.log.gz
+/runs/client/kubejs/config/client.json
+/runs/client/command_history.txt
+/runs/client/kubejs/config/common.json
+/runs/client/crash-reports/crash-2024-08-22_09.01.43-fml.txt
+/runs/client/logs/debug-1.log.gz
+/runs/client/logs/debug-2.log.gz
+/runs/client/logs/debug-3.log.gz
+/runs/client/logs/debug-4.log.gz
+/runs/client/local/kubejs/dev.json
+/runs/client/config/fml.toml
+/runs/client/saves/New World/icon.png
+/runs/client/kubejs/client_scripts/jsconfig.json
+/runs/client/kubejs/server_scripts/jsconfig.json
+/runs/client/kubejs/startup_scripts/jsconfig.json
+/runs/client/saves/New World/kubejs_persistent_data.nbt
+/runs/client/saves/New World/level.dat
+/runs/client/saves/New World/level.dat_old
+/runs/client/downloads/log.json
+/runs/client/kubejs/client_scripts/main.js
+/runs/client/kubejs/server_scripts/main.js
+/runs/client/kubejs/startup_scripts/main.js
+/runs/client/config/neoforge-client.toml
+/runs/client/config/neoforge-common.toml
+/runs/client/config/neoforge-server.toml
+/runs/client/saves/New World/data/neoforge_data_attachments.dat
+/runs/client/saves/New World/DIM1/data/neoforge_data_attachments.dat
+/runs/client/saves/New World/DIM-1/data/neoforge_data_attachments.dat
+/runs/client/options.txt
+/runs/client/.vscode/probe.code-snippets
+/runs/client/kubejs/config/probe-settings.json
+/runs/client/saves/New World/entities/r.0.0.mca
+/runs/client/saves/New World/poi/r.0.0.mca
+/runs/client/saves/New World/region/r.0.0.mca
+/runs/client/saves/New World/entities/r.0.-1.mca
+/runs/client/saves/New World/poi/r.0.-1.mca
+/runs/client/saves/New World/region/r.0.-1.mca
+/runs/client/saves/New World/entities/r.-1.0.mca
+/runs/client/saves/New World/poi/r.-1.0.mca
+/runs/client/saves/New World/region/r.-1.0.mca
+/runs/client/saves/New World/entities/r.-1.-1.mca
+/runs/client/saves/New World/poi/r.-1.-1.mca
+/runs/client/saves/New World/region/r.-1.-1.mca
+/runs/client/saves/New World/data/raids.dat
+/runs/client/saves/New World/DIM-1/data/raids.dat
+/runs/client/saves/New World/DIM1/data/raids_end.dat
+/runs/client/saves/New World/data/random_sequences.dat
+/runs/client/kubejs/README.txt
+/runs/client/saves/New World/serverconfig/readme.txt
+/runs/client/.vscode/recipe.json
+/runs/client/saves/New World/session.lock
+/runs/client/.vscode/settings.json
+/runs/client/usercache.json
+/runs/client/usernamecache.json

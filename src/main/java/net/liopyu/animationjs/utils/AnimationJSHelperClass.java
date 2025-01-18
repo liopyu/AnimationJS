@@ -7,7 +7,6 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import lio.playeranimatorapi.API.PlayerAnimAPIClient;
 import lio.playeranimatorapi.data.PlayerAnimationData;
-import lio.playeranimatorapi.data.PlayerParts;
 import lio.playeranimatorapi.modifier.CommonModifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -15,7 +14,6 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -43,6 +41,10 @@ public class AnimationJSHelperClass {
             ConsoleJS.CLIENT.error(errorMessage);
             clientErrorMessagesLogged.add(errorMessage);
         }
+    }
+
+    public static void logInfoMessage(String message) {
+        ConsoleJS.CLIENT.info(message);
     }
 
     public static void logServerWarningMessageOnce(String errorMessage) {
@@ -247,5 +249,6 @@ public class AnimationJSHelperClass {
     public static boolean isClientPlayer(Object player) {
         return player instanceof AbstractClientPlayer;
     }
+
 
 }
