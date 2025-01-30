@@ -2,11 +2,24 @@ package net.liopyu.animationjs.mixin;
 
 /*import dev.kosmx.playerAnim.core.util.Ease;*/
 
+import com.zigythebird.playeranimatorapi.API.PlayerAnimAPI;
+import com.zigythebird.playeranimatorapi.data.PlayerAnimationData;
+import com.zigythebird.playeranimatorapi.data.PlayerParts;
+import com.zigythebird.playeranimatorapi.modifier.CommonModifier;
+import dev.kosmx.playerAnim.core.util.Ease;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import net.liopyu.animationjs.events.IAnimationTrigger;
+import net.liopyu.animationjs.utils.AnimationJSHelperClass;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 @Mixin(value = Player.class, remap = true)
 public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
@@ -16,8 +29,8 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     public final Player animatorJS$objectPlayer = (Player) animatorJS$player;
     @Unique
     private int animatorJS$cooldown;
-    /*@Unique
-    private ResourceLocation animatorJS$currentLocation;*/
+    @Unique
+    private ResourceLocation animatorJS$currentLocation;
     @Unique
     private double animatorJS$prevX;
     @Unique
@@ -69,8 +82,6 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     }
 
 
-    /*
-
     @Unique
     private boolean animatorJS$canPlay(ResourceLocation aN) {
         if (this.animatorJS$currentLocation == null) {
@@ -90,7 +101,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
             Used to trigger animations off a server player. This can be
             called from any server player object.
-
+            
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving")
@@ -118,7 +129,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
             Used to trigger animations off a server player. This can be
             called from any server player object with the extra option for animations to overlap themselves.
-
+            
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving", true)
@@ -149,19 +160,19 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to trigger animations off the server player with customizable animation data.
-
+            
             Example Usage:
             ```javascript
-            event.player.triggerAnimation("animationjs:waving", 1, "linear", true, false);
+            event.player.triggerAnimation("animationjs:waving", 1, "linear", 1, 0);
             ```
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
             @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
             @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
-            @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
-            @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations")
+            @Param(name = "priority", value = "int: The priority level of the animation (higher value means higher priority)"),
+            @Param(name = "startTick", value = "int: The tick delay before the animation starts")
     })
-    public void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important) {
+    public void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, int priority, int startTick) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationID, "resourcelocation");
         if (animatorJS$objectPlayer.level().isClientSide()) {
             AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Unable to play animations from client scripts. Please use server scripts or the AnimationJS.universalController() server event.");
@@ -179,32 +190,42 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             if (animatorJS$canPlay(aN)) {
                 int easingID = ((Ease) ease).getId();
                 ServerLevel serverLevel = serverPlayer.serverLevel();
-                PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
+                PlayerAnimationData data = new PlayerAnimationData(
+                        serverPlayer.getUUID(),
+                        aN,
+                        PlayerParts.allEnabled,
+                        null,
+                        transitionLength,
+                        easingID,
+                        priority,
+                        startTick
+                );
                 PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, data);
             }
         }
     }
 
+
     @Unique
     @Info(value = """
             Used to trigger animations off the server player with customizable animation data.
-
+            
             Example Usage:
             ```javascript
-            event.triggerAnimation("animationjs:waving", 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
-            	parts.leftArm.setEnabled(false)
+            event.triggerAnimation("animationjs:waving", 1, "linear", 1, 0, ["playeranimatorapi:mirroronalthand"], parts => {
+            	parts.leftArm.setEnabled(false);
             });
             ```
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
             @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
             @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
-            @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
-            @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations"),
+            @Param(name = "priority", value = "int: The priority level of the animation (higher value means higher priority)"),
+            @Param(name = "startTick", value = "int: The tick delay before the animation starts"),
             @Param(name = "modifiers", value = "List<String>: List of modifiers to apply to the animation, can also be null"),
-            @Param(name = "partsConsumer", value = "Consumer<PlayerParts>: Consumer to modify player parts such as part visibility, rotation ect.")
+            @Param(name = "partsConsumer", value = "Consumer<PlayerParts>: Consumer to modify player parts such as part visibility, rotation, etc.")
     })
-    public void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important, List<?> modifiers, Consumer<PlayerParts> partsConsumer) {
+    public void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, int priority, int startTick, List<?> modifiers, Consumer<PlayerParts> partsConsumer) {
         if (animatorJS$objectPlayer.level().isClientSide()) {
             AnimationJSHelperClass.logClientErrorMessageOnce("[AnimationJS]: Unable to play animations from client scripts. Please use server scripts or the AnimationJS.universalController() server event.");
         } else if (animatorJS$player instanceof ServerPlayer serverPlayer) {
@@ -231,20 +252,30 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
                     try {
                         partsConsumer.accept(playerParts);
                     } catch (Exception t) {
-                        AnimationJSHelperClass.logServerErrorMessageOnceCatchable("[AnimationJS]: Error in AnimationJS.universalController for method startAnimation", t);
+                        AnimationJSHelperClass.logServerErrorMessageOnceCatchable("[AnimationJS]: Error in AnimationJS.universalController for method triggerAnimation", t);
                     }
                 }
                 ServerLevel serverLevel = serverPlayer.serverLevel();
-                PlayerAnimationData data = new PlayerAnimationData(serverPlayer.getUUID(), aN, playerParts, (List<CommonModifier>) modifierlist, transitionLength, easingID, firstPersonEnabled, important);
+                PlayerAnimationData data = new PlayerAnimationData(
+                        serverPlayer.getUUID(),
+                        aN,
+                        playerParts,
+                        (List<CommonModifier>) modifierlist,
+                        transitionLength,
+                        easingID,
+                        priority,
+                        startTick
+                );
                 PlayerAnimAPI.playPlayerAnim(serverLevel, serverPlayer, data);
             }
         }
     }
 
+
     @Unique
     @Info(value = """
             Used to stop a certain player animation.
-
+            
             Example Usage:
             ```javascript
             event.stopAnimation("animationjs:waving")
@@ -265,5 +296,5 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
             ResourceLocation aN = (ResourceLocation) animName;
             PlayerAnimAPI.stopPlayerAnim(serverLevel, serverPlayer, aN);
         }
-    }*/
+    }
 }

@@ -87,6 +87,10 @@ repositories {
         name = "Illusive Soulworks maven"
         url = "https://maven.theillusivec4.top/"
     }
+    maven {
+        name "zigythebirdMods"
+        url "https://maven.zigythebird.com/mods"
+    }
 }
 
 dependencies {
@@ -94,6 +98,8 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     implementation "dev.latvian.mods:rhino:$rhino_version"
     implementation "dev.latvian.mods:kubejs-neoforge:$kubejs_version"
+    implementation "dev.kosmx.player-anim:player-animation-lib-forge:${playerAnim_version}"
+    implementation "com.zigythebird.playeranimatorapi:playeranimatorapi-neoforge-$project.minecraft_version:$project.playeranimatorapi_version"
 
 }
 tasks.withType(ProcessResources).configureEach {

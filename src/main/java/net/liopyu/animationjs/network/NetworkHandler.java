@@ -1,19 +1,25 @@
 package net.liopyu.animationjs.network;
 
+import net.liopyu.animationjs.network.client.ClientPayloadHandler;
+import net.liopyu.animationjs.network.server.ServerPayloadHandler;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+@EventBusSubscriber(modid = "animationjs", bus = EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "1.0";
-   /* public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(AnimationJS.MODID, "channel"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
-
-    public static void init() {
-        CHANNEL.registerMessage(0, AnimationStateUpdatePacket.class, AnimationStateUpdatePacket::encode, AnimationStateUpdatePacket::decode, AnimationStateUpdatePacket::handle);
+    @SubscribeEvent
+    public static void registerPayloads(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar("1");
+        registrar.playBidirectional(
+                AnimationStateUpdatePayload.TYPE,
+                AnimationStateUpdatePayload.CODEC,
+                new DirectionalPayloadHandler<>(
+                        ClientPayloadHandler::handleAnimationStateUpdate,
+                        ServerPayloadHandler::handleAnimationStateUpdate
+                )
+        );
     }
-
-    public static void sendToServer(Object msg) {
-        CHANNEL.sendToServer(msg);
-    }*/
 }

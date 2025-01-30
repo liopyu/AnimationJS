@@ -1,9 +1,13 @@
 package net.liopyu.animationjs.events.subevents.server;
 
+import net.liopyu.animationjs.events.EventHandlers;
 import net.liopyu.animationjs.events.IAnimationTrigger;
 import net.liopyu.animationjs.events.UniversalController;
+import net.liopyu.animationjs.network.server.AnimationStateTracker;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -16,14 +20,21 @@ public class ServerEventHandlers {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         animatorJS$updateMovementBoolean(event.getEntity());
-        /*if (event.player instanceof ServerPlayer serverPlayer && EventHandlers.universalController.hasListeners()) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer && EventHandlers.universalController.hasListeners()) {
             UniversalController cont = ServerEventHandlers.thisList.get(serverPlayer.getUUID());
             if (cont == null) {
                 cont = new UniversalController(serverPlayer);
                 ServerEventHandlers.thisList.put(serverPlayer.getUUID(), cont);
             }
             EventHandlers.universalController.post(cont);
-        }*/
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AnimationStateTracker.removePlayer(player);
+        }
     }
 
     public static void animatorJS$updateMovementBoolean(Player player) {

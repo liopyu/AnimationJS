@@ -1,10 +1,15 @@
 package net.liopyu.animationjs.events;
 
+import com.zigythebird.playeranimatorapi.data.PlayerParts;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 @RemapPrefixForJS("animatorJS$")
 public interface IAnimationTrigger {
-   /* void animatorJS$triggerAnimation(Object animationName);
+    void animatorJS$triggerAnimation(Object animationName);
 
     void animatorJS$triggerAnimation(Object animationName, boolean canOverlapSelf);
 
@@ -12,12 +17,12 @@ public interface IAnimationTrigger {
 
     void animatorJS$triggerAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important, List<?> modifiers, Consumer<PlayerParts> partsConsumer);
 
-    void animatorJS$stopAnimation(Object animationName);*/
+    void animatorJS$stopAnimation(Object animationName);
 
     boolean animatorJS$isMoving();
 
-   /* @RemapForJS("isPlayingAnimation")
-    boolean animatorJS$isAnimActive();*/
+    @RemapForJS("isPlayingAnimation")
+    boolean animatorJS$isAnimActive();
 
     void animatorJS$updateMovementBoolean();
 

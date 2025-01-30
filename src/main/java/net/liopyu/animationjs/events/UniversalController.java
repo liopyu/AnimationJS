@@ -1,9 +1,30 @@
 package net.liopyu.animationjs.events;
 
 
-public class UniversalController /*extends SimplePlayerKubeEvent*/ {
+import com.zigythebird.playeranimatorapi.API.PlayerAnimAPI;
+import com.zigythebird.playeranimatorapi.data.PlayerAnimationData;
+import com.zigythebird.playeranimatorapi.data.PlayerParts;
+import com.zigythebird.playeranimatorapi.modifier.CommonModifier;
+import dev.kosmx.playerAnim.api.layered.IAnimation;
+import dev.kosmx.playerAnim.api.layered.ModifierLayer;
+import dev.kosmx.playerAnim.core.util.Ease;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
+import dev.latvian.mods.kubejs.player.SimplePlayerKubeEvent;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
+import net.liopyu.animationjs.network.server.AnimationStateTracker;
+import net.liopyu.animationjs.utils.AnimationJSHelperClass;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
-/*
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+public class UniversalController extends SimplePlayerKubeEvent {
+
     private transient ResourceLocation currentLocation;
 
     public UniversalController(Player p) {
@@ -33,7 +54,7 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
         } else {
             var clientPlayer = AnimationJSHelperClass.getClientPlayerByUUID(playerUUID);
             if (clientPlayer != null) {
-                ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(clientPlayer).get(new ResourceLocation("liosplayeranimatorapi", "factory"));
+                ModifierLayer<IAnimation> anim = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(clientPlayer).get(ResourceLocation.fromNamespaceAndPath("zigysplayeranimatorapi", "factory"));
                 if (anim == null) {
                     return false;
                 }
@@ -53,7 +74,7 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
 
     @Info(value = """
             Used to play animations on player tick.
-                        
+            
             Example Usage:
             ```javascript
             event.startAnimation("animationjs:waving")
@@ -76,7 +97,7 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
     @Info(value = """
             Used to play animations on player tick with the option
             to have animations overlap themselves when played.
-                        
+            
             Example Usage:
             ```javascript
             event.startAnimation("animationjs:waving", true)
@@ -102,19 +123,19 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
 
     @Info(value = """
             Used to play animations on player tick with customizable animation data.
-                        
+            
             Example Usage:
             ```javascript
-            event.startAnimation("animationjs:waving", 1, "linear", true, false);
+            event.startAnimation("animationjs:waving", 1, "linear", 1, 0);
             ```
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
             @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
             @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
-            @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
-            @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations")
+            @Param(name = "priority", value = "int: The priority level of the animation (higher value means higher priority)"),
+            @Param(name = "startTick", value = "int: The tick delay before the animation starts")
     })
-    public void startAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important) {
+    public void startAnimation(Object animationID, int transitionLength, String easeID, int priority, int startTick) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationID, "resourcelocation");
         if (animName == null) {
             AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: startAnimation. Must be a ResourceLocation.");
@@ -129,17 +150,27 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
         if (canPlay(aN, this.getPlayer())) {
             int easingID = ((Ease) ease).getId();
             ServerLevel serverLevel = getServerPlayer().serverLevel();
-            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, PlayerParts.allEnabled, null, transitionLength, easingID, firstPersonEnabled, important);
+            PlayerAnimationData data = new PlayerAnimationData(
+                    getServerPlayer().getUUID(),
+                    aN,
+                    PlayerParts.allEnabled,
+                    null,
+                    transitionLength,
+                    easingID,
+                    priority,
+                    startTick
+            );
             PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
         }
     }
 
+
     @Info(value = """
             Used to play animations on player tick with customizable animation data.
-                        
+            
             Example Usage:
             ```javascript
-            event.startAnimation("animationjs:smith", 1, "linear", true, false, ["playeranimatorapi:headposboundcamera"], parts => {
+            event.startAnimation("animationjs:smith", 1, "linear", 1, 0, ["playeranimatorapi:headposboundcamera"], parts => {
             	parts.leftArm.setEnabled(false);
             });
             ```
@@ -147,12 +178,12 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
             @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
             @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
-            @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
-            @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations"),
+            @Param(name = "priority", value = "int: The priority level of the animation (higher value means higher priority)"),
+            @Param(name = "startTick", value = "int: The tick delay before the animation starts"),
             @Param(name = "modifiers", value = "List<String>: List of modifiers to apply to the animation"),
-            @Param(name = "partsConsumer", value = "Consumer<PlayerParts>: Consumer to modify player parts such as part visibility, rotation ect.")
+            @Param(name = "partsConsumer", value = "Consumer<PlayerParts>: Consumer to modify player parts such as part visibility, rotation, etc.")
     })
-    public void startAnimation(Object animationID, int transitionLength, String easeID, boolean firstPersonEnabled, boolean important, List<?> modifiers, Consumer<PlayerParts> partsConsumer) {
+    public void startAnimation(Object animationID, int transitionLength, String easeID, int priority, int startTick, List<?> modifiers, Consumer<PlayerParts> partsConsumer) {
         Object animName = AnimationJSHelperClass.convertObjectToDesired(animationID, "resourcelocation");
         if (animName == null) {
             AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: startAnimation. Must be a ResourceLocation.");
@@ -180,14 +211,24 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
                 }
             }
             ServerLevel serverLevel = getServerPlayer().serverLevel();
-            PlayerAnimationData data = new PlayerAnimationData(getServerPlayer().getUUID(), aN, playerParts, (List<CommonModifier>) modifierlist, transitionLength, easingID, firstPersonEnabled, important);
+            PlayerAnimationData data = new PlayerAnimationData(
+                    getServerPlayer().getUUID(),
+                    aN,
+                    playerParts,
+                    (List<CommonModifier>) modifierlist,
+                    transitionLength,
+                    easingID,
+                    priority,
+                    startTick
+            );
             PlayerAnimAPI.playPlayerAnim(serverLevel, getServerPlayer(), data);
         }
     }
 
+
     @Info(value = """
             Used to stop a certain player animation.
-                        
+            
             Example Usage:
             ```javascript
             event.stopAnimation("animationjs:waving")
@@ -204,6 +245,6 @@ public class UniversalController /*extends SimplePlayerKubeEvent*/ {
         ServerLevel serverLevel = getServerPlayer().serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
         PlayerAnimAPI.stopPlayerAnim(serverLevel, getServerPlayer(), aN);
-    }*/
+    }
 }
 

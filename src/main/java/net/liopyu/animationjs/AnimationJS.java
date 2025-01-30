@@ -7,7 +7,7 @@ public class AnimationJS {
     public static final String MODID = "animationjs";
 
     public AnimationJS() {
-        /*NetworkHandler.init();*/
+        //NetworkHandler.init();
     }
 }
 
