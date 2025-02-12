@@ -178,3 +178,4 @@ run/
 /runs/client/.vscode/settings.json
 /runs/client/usercache.json
 /runs/client/usernamecache.json
+/.settings/org.eclipse.buildship.core.prefs
