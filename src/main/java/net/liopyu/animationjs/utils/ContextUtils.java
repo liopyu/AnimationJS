@@ -1,10 +1,10 @@
 package net.liopyu.animationjs.utils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.latvian.mods.kubejs.typings.Info;
-import net.liopyu.animationjs.mixin.PlayerRendererMixin;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.LivingEntity;
@@ -47,6 +47,24 @@ public class ContextUtils {
             this.ageInTicks = ageInTicks;
             this.netHeadYaw = netHeadYaw;
             this.headPitch = headPitch;
+        }
+    }
+
+    public static class RenderHandsWithItemsContext {
+        public final float partialTicks;
+        public final PoseStack poseStack;
+        public final MultiBufferSource.BufferSource buffer;
+        public final LocalPlayer playerEntity;
+        public final int combinedLight;
+        public final ItemInHandRenderer itemInHandRenderer;
+
+        public RenderHandsWithItemsContext(float partialTicks, PoseStack poseStack, MultiBufferSource.BufferSource buffer, LocalPlayer playerEntity, int combinedLight, ItemInHandRenderer itemInHandRenderer) {
+            this.partialTicks = partialTicks;
+            this.poseStack = poseStack;
+            this.buffer = buffer;
+            this.playerEntity = playerEntity;
+            this.combinedLight = combinedLight;
+            this.itemInHandRenderer = itemInHandRenderer;
         }
     }
 }
