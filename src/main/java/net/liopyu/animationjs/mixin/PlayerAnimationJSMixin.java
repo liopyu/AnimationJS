@@ -15,14 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -115,7 +111,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
             Used to trigger animations off a server player. This can be
             called from any server player object.
-                        
+            
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving")
@@ -143,7 +139,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Info(value = """
             Used to trigger animations off a server player. This can be
             called from any server player object with the extra option for animations to overlap themselves.
-                        
+            
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving", true)
@@ -174,7 +170,7 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to trigger animations off the server player with customizable animation data.
-                        
+            
             Example Usage:
             ```javascript
             event.player.triggerAnimation("animationjs:waving", 1, "linear", true, false);
@@ -213,10 +209,10 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to trigger animations off the server player with customizable animation data.
-                        
+            
             Example Usage:
             ```javascript
-            event.triggerAnimation("animationjs:waving", 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
+            event.player.triggerAnimation("animationjs:waving", 1, "linear", true, false, ["playeranimatorapi:mirroronalthand"], parts => {
             	parts.leftArm.setEnabled(false)
             });
             ```
@@ -269,10 +265,10 @@ public abstract class PlayerAnimationJSMixin implements IAnimationTrigger {
     @Unique
     @Info(value = """
             Used to stop a certain player animation.
-                        
+            
             Example Usage:
             ```javascript
-            event.stopAnimation("animationjs:waving")
+            event.player.stopAnimation("animationjs:waving")
             ```
             """, params = {
             @Param(name = "animationName", value = "ResourceLocation: The name of the animation specified in the json"),
