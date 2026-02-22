@@ -7,6 +7,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 
 public class ContextUtils {
@@ -49,7 +50,6 @@ public class ContextUtils {
             this.headPitch = headPitch;
         }
     }
-
     public static class RenderHandsWithItemsContext {
         public final float partialTicks;
         public final PoseStack poseStack;
@@ -57,14 +57,16 @@ public class ContextUtils {
         public final LocalPlayer playerEntity;
         public final int combinedLight;
         public final ItemInHandRenderer itemInHandRenderer;
+        public final InteractionHand hand;
 
-        public RenderHandsWithItemsContext(float partialTicks, PoseStack poseStack, MultiBufferSource.BufferSource buffer, LocalPlayer playerEntity, int combinedLight, ItemInHandRenderer itemInHandRenderer) {
+        public RenderHandsWithItemsContext(float partialTicks, PoseStack poseStack, MultiBufferSource.BufferSource buffer, LocalPlayer playerEntity, int combinedLight, ItemInHandRenderer itemInHandRenderer, InteractionHand hand) {
             this.partialTicks = partialTicks;
             this.poseStack = poseStack;
             this.buffer = buffer;
             this.playerEntity = playerEntity;
             this.combinedLight = combinedLight;
             this.itemInHandRenderer = itemInHandRenderer;
+            this.hand = hand;
         }
     }
 

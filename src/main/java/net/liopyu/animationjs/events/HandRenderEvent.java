@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import net.liopyu.animationjs.utils.ContextUtils;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.InteractionHand;
 
 @SuppressWarnings("unused")
 public class HandRenderEvent extends SimplePlayerEventJS {
@@ -14,7 +15,7 @@ public class HandRenderEvent extends SimplePlayerEventJS {
     public final MultiBufferSource.BufferSource buffer;
     public final int combinedLight;
     public final ItemInHandRenderer itemInHandRenderer;
-
+    public final InteractionHand hand;
     public HandRenderEvent(ContextUtils.RenderHandsWithItemsContext context) {
         super(context.playerEntity);
         this.partialTicks = context.partialTicks;
@@ -22,8 +23,19 @@ public class HandRenderEvent extends SimplePlayerEventJS {
         this.buffer = context.buffer;
         this.combinedLight = context.combinedLight;
         this.itemInHandRenderer = context.itemInHandRenderer;
+        this.hand = context.hand;
     }
-
+    @Info(value = """
+            Returns which hand is currently being rendered, either 'MAIN_HAND' or 'OFF_HAND'.
+            
+            Example Usage:
+            ```javascript
+            const hand = event.getHand();
+            ```
+            """)
+    public InteractionHand getHand() {
+        return hand;
+    }
     @Info(value = """
             Retrieves the item-in-hand renderer, which handles rendering items held by the player.
             
