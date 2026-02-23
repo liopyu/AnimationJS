@@ -2,6 +2,7 @@ package net.liopyu.animationjs.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.liopyu.animationjs.events.ArmRenderEvent;
 import net.liopyu.animationjs.events.EventHandlers;
 import net.liopyu.animationjs.events.HandRenderEvent;
 import net.liopyu.animationjs.utils.ContextUtils;
@@ -24,13 +25,22 @@ public class PlayerArmRenderer {
     private ItemInHandRenderer animatorJS$itemInHandRenderer = (ItemInHandRenderer) (Object) this;
 
     @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
-    private void animationJS$renderArmWithItem(AbstractClientPlayer pPlayer, float pPartialTicks, float pPitch, InteractionHand pHand, float pSwingProgress, ItemStack pStack, float pEquippedProgress, PoseStack pPoseStack, MultiBufferSource pBuffer, int pCombinedLight, CallbackInfo ci) {
-        var context = new ContextUtils.RenderHandsWithItemsContext(pPartialTicks, pPoseStack, (MultiBufferSource.BufferSource) pBuffer, (LocalPlayer) pPlayer, pCombinedLight, animatorJS$itemInHandRenderer, pHand);
-        HandRenderEvent modelEvent = new HandRenderEvent(context);
+    private void animationJS$renderArmWithItem(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
         if (EventHandlers.handRenderer.hasListeners()) {
+            var context = new ContextUtils.RenderHandsWithItemsContext(partialTicks, poseStack, (MultiBufferSource.BufferSource) buffer, (LocalPlayer) player, combinedLight, animatorJS$itemInHandRenderer, hand);
+            HandRenderEvent modelEvent = new HandRenderEvent(context);
             if (!EventHandlers.handRenderer.post(modelEvent).pass()) {
                 ci.cancel();
             }
+        }
+    }
+
+    @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;isScoping()Z", shift = At.Shift.AFTER))
+    private void animationJS$renderArmWithItemTransform(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
+        if (EventHandlers.armRenderer.hasListeners()) {
+            var context = new ContextUtils.RenderHandsWithItemsContext(partialTicks, poseStack, (MultiBufferSource.BufferSource) buffer, (LocalPlayer) player, combinedLight, animatorJS$itemInHandRenderer, hand);
+            ArmRenderEvent modelEvent = new ArmRenderEvent(context);
+            EventHandlers.armRenderer.post(modelEvent);
         }
     }
 }

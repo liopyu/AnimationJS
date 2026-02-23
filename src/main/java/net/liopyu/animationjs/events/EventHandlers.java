@@ -10,4 +10,5 @@ public class EventHandlers {
     public static final EventHandler playerModel = AnimationJS.client("playerModel", () -> PlayerModelEvent.class);
     public static final EventHandler handRenderer = AnimationJS.client("handRenderer", () -> HandRenderEvent.class).hasResult();
 
+    public static EventHandler armRenderer = AnimationJS.client("armRenderer", () -> ArmRenderEvent.class);
 }

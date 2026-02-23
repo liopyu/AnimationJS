@@ -1,6 +1,7 @@
 package net.liopyu.animationjs.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.latvian.mods.kubejs.event.EventExit;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.liopyu.animationjs.utils.ContextUtils;
@@ -16,6 +17,8 @@ public class HandRenderEvent extends SimplePlayerEventJS {
     public final int combinedLight;
     public final ItemInHandRenderer itemInHandRenderer;
     public final InteractionHand hand;
+    public transient boolean eventCancelled;
+
     public HandRenderEvent(ContextUtils.RenderHandsWithItemsContext context) {
         super(context.playerEntity);
         this.partialTicks = context.partialTicks;
@@ -24,10 +27,12 @@ public class HandRenderEvent extends SimplePlayerEventJS {
         this.combinedLight = context.combinedLight;
         this.itemInHandRenderer = context.itemInHandRenderer;
         this.hand = context.hand;
+        eventCancelled = false;
     }
+
     @Info(value = """
             Returns which hand is currently being rendered, either 'MAIN_HAND' or 'OFF_HAND'.
-            
+                        
             Example Usage:
             ```javascript
             const hand = event.getHand();
@@ -36,9 +41,10 @@ public class HandRenderEvent extends SimplePlayerEventJS {
     public InteractionHand getHand() {
         return hand;
     }
+
     @Info(value = """
             Retrieves the item-in-hand renderer, which handles rendering items held by the player.
-            
+                        
             Example Usage:
             ```javascript
             const itemRenderer = event.getItemInHandRenderer();
@@ -51,7 +57,7 @@ public class HandRenderEvent extends SimplePlayerEventJS {
 
     @Info(value = """
             Retrieves the buffer source used for rendering vertex data.
-            
+                        
             Example Usage:
             ```javascript
             const buffer = event.getBuffer();
@@ -63,7 +69,7 @@ public class HandRenderEvent extends SimplePlayerEventJS {
 
     @Info(value = """
             Retrieves the partial tick value used for rendering interpolation.
-            
+                        
             Example Usage:
             ```javascript
             const partialTicks = event.getPartialTicks();
@@ -75,7 +81,7 @@ public class HandRenderEvent extends SimplePlayerEventJS {
 
     @Info(value = """
             Retrieves the combined light value used for lighting calculations during rendering.
-            
+                        
             Example Usage:
             ```javascript
             const combinedLight = event.getCombinedLight();
@@ -87,7 +93,7 @@ public class HandRenderEvent extends SimplePlayerEventJS {
 
     @Info(value = """
             Retrieves the current pose stack used for matrix transformations during rendering.
-            
+                        
             Example Usage:
             ```javascript
             const poseStack = event.getPoseStack();
@@ -97,4 +103,16 @@ public class HandRenderEvent extends SimplePlayerEventJS {
         return poseStack;
     }
 
+    public boolean isCancelled() {
+        return eventCancelled;
+    }
+
+    @Info(value = """
+            Used to cancel the default player hand renderer
+            """)
+    @Override
+    public Object cancel() throws EventExit {
+        eventCancelled = true;
+        return super.cancel();
+    }
 }
