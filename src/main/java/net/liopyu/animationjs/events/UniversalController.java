@@ -1,7 +1,6 @@
 package net.liopyu.animationjs.events;
 
 
-import com.google.common.collect.ImmutableList;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.core.util.Ease;
@@ -13,42 +12,42 @@ import lio.playeranimatorapi.API.PlayerAnimAPI;
 import lio.playeranimatorapi.data.PlayerAnimationData;
 import lio.playeranimatorapi.data.PlayerParts;
 import lio.playeranimatorapi.modifier.CommonModifier;
-import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
-import net.liopyu.animationjs.events.subevents.server.ServerEventHandlers;
 import net.liopyu.animationjs.network.server.AnimationStateTracker;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class UniversalController extends SimplePlayerEventJS {
-
-
-    private transient ResourceLocation currentLocation;
+    private static final Map<UUID, ResourceLocation> CURRENT_LOCATIONS = new ConcurrentHashMap<>();
 
     public UniversalController(Player p) {
         super(p);
     }
 
+    public static void clearCachedState(UUID playerUUID) {
+        CURRENT_LOCATIONS.remove(playerUUID);
+    }
 
     private boolean canPlay(ResourceLocation aN, Player player) {
+        UUID playerUUID = player.getUUID();
+        ResourceLocation currentLocation = CURRENT_LOCATIONS.get(playerUUID);
         if (currentLocation == null) {
-            currentLocation = aN;
+            CURRENT_LOCATIONS.put(playerUUID, aN);
             return true;
         }
         if (!isAnimActive(player)) {
-            currentLocation = aN;
+            CURRENT_LOCATIONS.put(playerUUID, aN);
             return true;
-        } else if (!currentLocation.toString().equals(aN.toString())) {
-            currentLocation = aN;
+        } else if (!currentLocation.equals(aN)) {
+            CURRENT_LOCATIONS.put(playerUUID, aN);
             return true;
         }
         return false;
@@ -229,9 +228,11 @@ public class UniversalController extends SimplePlayerEventJS {
             AnimationJSHelperClass.logServerErrorMessageOnce("[AnimationJS]: Invalid animation name in field: stopAnimation. Must be a ResourceLocation.");
             return;
         }
-        ServerLevel serverLevel = getServerPlayer().serverLevel();
+        ServerPlayer serverPlayer = getServerPlayer();
+        ServerLevel serverLevel = serverPlayer.serverLevel();
         ResourceLocation aN = (ResourceLocation) animName;
-        PlayerAnimAPI.stopPlayerAnim(serverLevel, getServerPlayer(), aN);
+        clearCachedState(serverPlayer.getUUID());
+        PlayerAnimAPI.stopPlayerAnim(serverLevel, serverPlayer, aN);
     }
 }
 
