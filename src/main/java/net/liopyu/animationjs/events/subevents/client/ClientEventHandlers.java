@@ -9,7 +9,6 @@ import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.liopyu.animationjs.AnimationJS;
-import net.liopyu.animationjs.events.PlayerRenderer;
 import net.liopyu.animationjs.network.NetworkHandler;
 import net.liopyu.animationjs.network.packet.AnimationStateUpdatePacket;
 import net.liopyu.animationjs.utils.AnimationJSHelperClass;
@@ -25,16 +24,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.joml.Matrix4f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import static net.liopyu.animationjs.AnimationJS.MODID;
 
 @Mod.EventBusSubscriber(modid = AnimationJS.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandlers {
-
-    public static final Map<UUID, PlayerRenderer> thisRenderList = new HashMap<>();
     private static final ResourceLocation VISION_OVERLAY_TEXTURE = new ResourceLocation("minecraft:textures/misc/pumpkinblur.png");
 
 

@@ -137,7 +137,7 @@ public class UniversalController extends SimplePlayerEventJS {
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
             @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
-            @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
+            @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link Ease} class"),
             @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
             @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations")
     })
@@ -173,7 +173,7 @@ public class UniversalController extends SimplePlayerEventJS {
             """, params = {
             @Param(name = "animationID", value = "ResourceLocation: The name of the animation specified in the json"),
             @Param(name = "transitionLength", value = "int: Duration of the transition length in milliseconds"),
-            @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link dev.kosmx.playerAnim.core.util.Ease} class"),
+            @Param(name = "easeID", value = "String: ID of the easing function to use for animation easing from the {@link Ease} class"),
             @Param(name = "firstPersonEnabled", value = "boolean: Whether the animation should be visible in first-person view"),
             @Param(name = "important", value = "boolean: Whether the animation is important and should override other animations"),
             @Param(name = "modifiers", value = "List<String>: List of modifiers to apply to the animation"),

@@ -4,7 +4,7 @@ package net.liopyu.animationjs.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.liopyu.animationjs.events.EventHandlers;
 import net.liopyu.animationjs.events.IPlayerRenderer;
-import net.liopyu.animationjs.events.subevents.client.ClientEventHandlers;
+import net.liopyu.animationjs.events.PlayerRenderEvent;
 import net.liopyu.animationjs.utils.ContextUtils;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -27,11 +27,7 @@ public abstract class PlayerRendererMixin implements IPlayerRenderer {
 
     @Inject(method = "render(Lnet/minecraft/client/player/AbstractClientPlayer;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true, remap = true)
     public void render(AbstractClientPlayer pEntity, float pEntityYaw, float pPartialTicks, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, CallbackInfo ci) {
-        net.liopyu.animationjs.events.PlayerRenderer renderer = ClientEventHandlers.thisRenderList.get(pEntity.getUUID());
-        if (renderer == null) {
-            renderer = new net.liopyu.animationjs.events.PlayerRenderer(pEntity);
-            ClientEventHandlers.thisRenderList.put(pEntity.getUUID(), renderer);
-        }
+        PlayerRenderEvent renderer = new PlayerRenderEvent(pEntity);
         renderer.eventCancelled = false;
         if (EventHandlers.playerRenderer.hasListeners()) {
             renderer.playerRenderContext = new ContextUtils.PlayerRenderContext(animatorJS$getRenderer(), pEntity, pEntityYaw, pPartialTicks, pPoseStack, pBuffer, pPackedLight);
